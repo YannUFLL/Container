@@ -2,11 +2,20 @@
 #include <vector>
 #include <iostream>
 
+class SousClasse
+{
+	int _a;
+	
+	SousClasse(int a): _a(a) {};
+}
+
+class MaClasse : private SousClasse
+{
+	MaClasse(): SousClasse()
+};
 
 int main()
 {
-	int buf;
-	std::vector<int> test(1000000000000000, 42);
-	std::cin >> buf;
-
+	struct std {};
+	std::cout << "test";
 }
