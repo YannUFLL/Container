@@ -14,7 +14,7 @@ void	ft_speed_test();
 
 int main()
 {
-	vector<int> coucou;
+	vector<int> coucou(10);
 
 	ft_mono_test<int>();
 	ft_speed_test<int>();

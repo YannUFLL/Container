@@ -1,5 +1,9 @@
 
+#ifndef VECTOR_HPP
+#define VECTOR_HPP
+
 #include <memory>
+#include "alloc.hpp"
 
 template<typename T, typename A = std::allocator<T> >
 class vector_base{
@@ -9,58 +13,50 @@ class vector_base{
 		T *_space;
 		T *_last; 
 
-	vector_base(const A& a, typename A::size_type n): _alloc(a), v(a.allocate(n)), space(v + n), last(v + n)  
-	{}
+	vector_base(const A& a, typename A::size_type n): _alloc(a), _v(a.allocate(n)) 
+	{
+		_space = _v + n; _last = _v + n;
+	}
 	~vector_base()
 	{
-		alloc.deallocate(v, last);
+		_alloc.deallocate(_v, _last - _v);
 	}
 };
-
-template<typename IT, typename T, typename A>
-void	uninitialized_fill(IT beg, IT end, const T& x, const A& alloc)
-{
-	IT p; 
-	try {
-		for (p = beg; p != end; ++p)
-			alloc.construct(p, x);
-	}
-	catch (std::exception &e)
-	{
-		for (IT q = beg; q !=p; q++ )
-			alloc.destroy(q);
-		throw(std::exception);
-	}
-}
-
-template<typename IT, typename T, typename A>
-void	uninitialized_copy(IT beg, IT end, T val, const A& alloc)
-{
-	IT p; 
-	try {
-		for (p = beg; p != end; ++p)
-			alloc.construct(p, x);
-	}
-	catch (std::exception &e)
-	{
-		for (IT q = beg; q !=p; q++ )
-			alloc.destroy(q);
-		throw(std::exception);
-	}
-}
 
 template <typename T, typename A = std::allocator<T> >
 class vector : public vector_base<T, A>
 {
-	vector<T,A>(size_type n, const &T val, const A&a ): vector_base<T,A>(a, n )
+	public :
+	class iterator : public std::iterator
+		std::random_access_iterator_tag,
+		T,
+		T,
+		T*,
+		T>
 	{
-		uninitialized_fill(_v, _v + n, val, a);
+		public :
+			Iterator(T* pointer) {};
+			iterator& iterator++() {};
+
+    		T& operator*() const {return *_ptr}
+    		T* operator->(return _ptr) {}
+			Iterator& operator++() {}  
+			bool operator==(typename iterator other) const 	{};
+			bool operator!=(typename iterator other) const	{};
+		private 
+			T* _ptr;
+	};
+	iterator begin() {}
+	iterator end() {} // return a invalid memorty address, is just to determin when the boundary was reach
+	vector<T,A>(size_t n, const T& val = T(), const A& alloc = A()): vector_base<T,A>(alloc, n )
+	{
+		uninitialized_fill(this->_v, this->_v + n, val, alloc);
 	}
 	void destroy_element()
 	{
-		for (T * p = _v; p != space; p++)
+		for (T * p = this->_v; p != this->space; p++)
 		{
-			alloc.destroy(q);
+			this->_alloc.destroy(p);
 		}
 	}
 };
@@ -69,3 +65,5 @@ template<typename T> void swap(vector_base<T>& a, vector_base<T> &b)
 {
 	swap(a._alloc, b._alloc);swap(a._v, b._v);swap(a._space,b._swapce);swap(a._last,b._last);
 }
+
+#endif

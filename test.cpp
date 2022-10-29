@@ -2,20 +2,22 @@
 #include <vector>
 #include <iostream>
 
-class SousClasse
-{
-	int _a;
-	
-	SousClasse(int a): _a(a) {};
-}
 
-class MaClasse : private SousClasse
+
+class MaClasse 
 {
-	MaClasse(): SousClasse()
+	public:
+	int _a; 
+	int _b;
+	MaClasse(int a, int b = int()): _a(a), _b(b) {}
 };
+
+int f(int)
+{
+	return (9);
+
+}
 
 int main()
 {
-	struct std {};
-	std::cout << "test";
 }
