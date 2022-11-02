@@ -11,7 +11,7 @@ RM = rm -f
 
 HEADER = -I include/
 
-CFLAGS = -Werror -Wextra -Wall -std=c++98
+CFLAGS = -Werror -Wextra -Wall -std=c++98 -g
 #-g -fsanitize=thread
 
 .cpp.o: 
