@@ -4,6 +4,7 @@
 
 #include <memory>
 #include "alloc.hpp"
+#include "choose_if_const.hpp"
 
 template<typename T, typename Alloc = std::allocator<T> >
 class vector_base{
@@ -47,10 +48,15 @@ class vector : public vector_base<T, Alloc>
 	typedef typename allocator_type::reference reference;
 	typedef typename allocator_type::const_reference const_reference;
 	typedef typename allocator_type::const_pointer const_pointer;
+	typedef typename vector<T, Alloc>::template vector_iterator<true> const_iterator;
+	typedef typename vector<T, Alloc>::template vector_iterator<false> iterator;
+	typedef typename vector<T, Alloc>::template vector_reverse_iterator<true> const_reverse_iterator;
+	typedef typename vector<T, Alloc>::template vector_reverse_iterator<false> reverse_iterator;
 	typedef std::size_t size_type;
 
 	public :
-	class iterator : public std::iterator<
+	template <bool CONST>
+	class vector_iterator : public std::iterator<
 		std::random_access_iterator_tag,
 		T,
 		T,
@@ -58,16 +64,20 @@ class vector : public vector_base<T, Alloc>
 		T>
 	{
 		public :
-			iterator(): _ptr(NULL) {}
-			iterator(pointer ptr) {this->_ptr = ptr;}
+			typedef typename choose_type<CONST, reference, const_reference>::type reference;
+			typedef typename choose_type<CONST, reference, const_pointer>::type pointer;
+			vector_iterator(): _ptr(NULL) {}
+			vector_iterator(pointer ptr) {this->_ptr = ptr;}
     		reference operator*() const {return *_ptr;}
     		pointer operator->() {return _ptr;}
 			iterator& operator++() {_ptr++; return(*this);} 
-			iterator& operator++(int) {iterator temp = *this; ++(*this); return(temp);} 
+			iterator operator++(int) {iterator temp = *this; ++(*this); return(temp);} 
+			iterator& operator--() {_ptr--; return(*this);} 
+			iterator operator--(int) {iterator temp = *this; --(*this); return(temp);} 
 			iterator& operator+=(value_type n){this->_ptr += n;return(*this);}
 			iterator& operator-=(value_type n){this->_ptr -= n;return(*this);}
-			iterator friend operator+(iterator &a, size_type n) {iterator it(a._ptr); it += n ; return (it);}
-			iterator friend operator-(iterator &a, size_type n) {iterator it(a._ptr); it -= n ; return (it);}
+			iterator friend operator+(iterator a, size_type n) {iterator it(a._ptr); it += n ; return (it);}
+			iterator friend operator-(iterator a, size_type n) {iterator it(a._ptr); it -= n ; return (it);}
 			friend size_type operator-(const iterator &a, const iterator &b) 
 			{
 				return (a._ptr - b._ptr);
@@ -105,24 +115,29 @@ class vector : public vector_base<T, Alloc>
 		private : 
 			pointer _ptr;
 	};
-		class reverse_iterator : public std::iterator<
+		template <bool CONST>
+		class vector_reverse_iterator : public std::iterator<
 		std::random_access_iterator_tag,
 		T,
 		T,
 		T*,
-		T>
+		T> 
 	{
 		public :
-			reverse_iterator(): _ptr(NULL) {}
-			reverse_iterator(pointer ptr) {this->_ptr = ptr;}
+			typedef typename choose_type<CONST, reference, const_reference>::type reference;
+			typedef typename choose_type<CONST, reference, const_pointer>::type pointer;
+			vector_reverse_iterator(): _ptr(NULL) {}
+			vector_reverse_iterator(pointer ptr) {this->_ptr = ptr;}
     		reference operator*() const {return *_ptr;}
     		pointer operator->() {return _ptr;}
 			reverse_iterator& operator++() {_ptr--; return(*this);} 
-			reverse_iterator& operator++(int) {reverse_iterator temp = *this; --(*this); return(temp);} 
+			reverse_iterator operator++(int) {reverse_iterator temp = *this; --(*this); return(temp);} 
+			reverse_iterator& operator--() {_ptr++; return(*this);} 
+			reverse_iterator operator--(int) {reverse_iterator temp = *this; ++(*this); return(temp);} 
 			reverse_iterator& operator+=(value_type n){this->_ptr -= n;return(*this);}
 			reverse_iterator& operator-=(value_type n){this->_ptr += n;return(*this);}
-			reverse_iterator friend operator+(reverse_iterator &a, size_type n) {reverse_iterator it(a._ptr); it += n ; return (it);}
-			reverse_iterator friend operator-(reverse_iterator &a, size_type n) {reverse_iterator it(a._ptr); it -= n ; return (it);}
+			reverse_iterator friend operator+(reverse_iterator a, size_type n) {reverse_iterator it(a._ptr); it += n ; return (it);}
+			reverse_iterator friend operator-(reverse_iterator a, size_type n) {reverse_iterator it(a._ptr); it -= n ; return (it);}
 			friend size_type operator-(const reverse_iterator &a, const reverse_iterator &b) 
 			{
 				return (a._ptr - b._ptr);
@@ -241,9 +256,10 @@ class vector : public vector_base<T, Alloc>
 		this->_space = ptr + n; 
 		this->_last = ptr + n;
 	}
-	size_type	return_pos(iterator a) const 
+	template <typename Type>
+	size_type	return_pos(Type a) const 
 	{
-		return((&*a) - this->_n);
+		return((&*a) - this->_v);
 	}
 	public :
 	/* ELEMENT ACCESS */
@@ -341,7 +357,7 @@ class vector : public vector_base<T, Alloc>
 	{
 		size_type pos; 
 		size_type nbr_elements;
-		if (this->size() + n > this->capacity)
+		if (this->size() + n > this->capacity())
 		{
 			nbr_elements = this->size();
 			pos = return_pos(position);
@@ -356,21 +372,63 @@ class vector : public vector_base<T, Alloc>
 		}
 		else 
 		{
-			pointer ptr; 
-			ptr = this->size() + n;
+			pointer ptr = this->_v; 
+			iterator test(ptr);
+			ptr += this->size() + n ;
 			reverse_iterator it(ptr);
-			reverse_iterator v(this->end());
+			reverse_iterator v(this->rbegin());
 			nbr_elements = this->size();
 			pos = return_pos(position);
-			uninitialized_copy(it,  it + (nbr_elements - pos), v, this->_alloc);
-			uninitialized_fill(it + (nbr_elements - pos), it + (nbr_elements - pos) + n, val, this->_alloc);
-			v = (this->begin() +  pos);
-			uninitialized_copy(it + (nbr_elements - pos) + n, it + (nbr_elements) + n , v, this->_alloc);
+			uninitialized_copy_and_destroy(it,  it + (nbr_elements - pos + 1), v, this->_alloc);
+			uninitialized_fill(it + (nbr_elements - pos + 1), it + (nbr_elements - pos + 1) + n, val, this->_alloc);
 			this->_space = ptr; 
 		}
+	}
+
+	iterator insert(iterator position, const value_type& val)
+	{
+		insert(position, 1, val);
+		return(position++);
+	}
+	template <class InputIterator>
+	void insert(const_iterator position, InputIterator first, InputIterator last,typename std::enable_if<!std::is_integral<InputIterator>::value>::type* = 0)
+	{
+		size_type pos; 
+		size_type nbr_elements;
+		size_type n = 0;
+		for (InputIterator ptr = first; ptr != last; ptr++)
+			n++;
+		if (this->size() + n > this->capacity())
+		{
+			nbr_elements = this->size();
+			pos = return_pos(position);
+			pointer ptr = this->_alloc.allocate(n + nbr_elements);
+			uninitialized_copy(ptr,  ptr + pos, this->_v, this->_alloc);
+			uninitialized_copy(ptr + pos, ptr + pos + n, first, this->_alloc);
+			uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, this->_v, this->_alloc);
+			this->~vector();
+			this->_v = ptr; 
+			this->_space = ptr + n + nbr_elements; 
+			this->_last = ptr + n + nbr_elements; 
+		}
+		else 
+		{
+			pointer ptr = this->_v; 
+			iterator test(ptr);
+			ptr += this->size() + n ;
+			reverse_iterator it(ptr);
+			reverse_iterator v(this->rbegin());
+			nbr_elements = this->size();
+			pos = return_pos(position);
+			uninitialized_copy_and_destroy(it,  it + (nbr_elements - pos + 1), v, this->_alloc);
+			uninitialized_copy(it + (nbr_elements - pos + 1), it + (nbr_elements - pos + 1) + n, first, this->_alloc);
+			this->_space = ptr; 
+		}
+	}
+	iterator erase (iterator position)
+	{
 
 	}
-	
 };
 
 

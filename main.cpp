@@ -14,12 +14,14 @@ void	ft_speed_test();
 
 int main()
 {
-	std::vector<int> coucou(10,42);
-	std::vector<int>::iterator it1 = coucou.begin();
-	std::vector<int>::iterator it2 = coucou.end();
-	if (it1 < it2)
-		std::cout << "OUI" << std::endl;
-	
+	std::vector<int> a(6,42);	
+	std::vector<int> b(6,88);	
+	b.reserve(100);
+	std::vector<int>::iterator z = b.insert(b.begin() + 2, a.begin(),a.end());
+	for (int i = 0; i < 12;  ++i)
+	{
+		std::cout << b[i] << std::endl;
+	}
 }
 
 
