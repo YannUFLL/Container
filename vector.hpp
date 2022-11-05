@@ -48,10 +48,10 @@ class vector : public vector_base<T, Alloc>
 	typedef typename allocator_type::reference reference;
 	typedef typename allocator_type::const_reference const_reference;
 	typedef typename allocator_type::const_pointer const_pointer;
-	typedef typename vector<T, Alloc>::template vector_iterator<true> const_iterator;
-	typedef typename vector<T, Alloc>::template vector_iterator<false> iterator;
-	typedef typename vector<T, Alloc>::template vector_reverse_iterator<true> const_reverse_iterator;
-	typedef typename vector<T, Alloc>::template vector_reverse_iterator<false> reverse_iterator;
+	typedef typename vector<T, Alloc>::vector_iterator<true> const_iterator;
+	typedef typename vector<T, Alloc>::vector_iterator<false> iterator;
+	typedef typename vector<T, Alloc>::vector_reverse_iterator<true> const_reverse_iterator;
+	typedef typename vector<T, Alloc>::vector_reverse_iterator<false> reverse_iterator;
 	typedef std::size_t size_type;
 
 	public :
@@ -425,9 +425,22 @@ class vector : public vector_base<T, Alloc>
 			this->_space = ptr; 
 		}
 	}
+	iterator erase( const_iterator first, const_iterator last )
+	{
+		size_type n = 0;
+		for (const_iterator ptr = first; ptr != last; ptr++)
+			n++;	
+		for (const_iterator ptr = first; ptr != last; ptr++)
+			this->alloc.destroy(&*ptr);
+		if (&*last != this->_last)
+			uninitialized_copy_and_destroy(first, this->end() - n, last, this->alloc);
+	}
 	iterator erase (iterator position)
 	{
-
+		this->alloc.destroy(&*position);
+		iterator copy(&*position);
+		if (*&position != this->_last)
+			uninitialized_copy_and_destroy(position, this->end() - 1, copy, this->alloc());
 	}
 };
 
