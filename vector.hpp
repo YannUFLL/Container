@@ -68,9 +68,18 @@ class vector : public vector_base<T, Alloc>
 	{
 		public :
 			typedef typename choose_type<CONST, reference, const_reference>::type reference;
-			typedef typename choose_type<CONST, reference, const_pointer>::type pointer;
+			typedef typename choose_type<CONST, pointer, const_pointer>::type pointer;
+			typedef typename choose_type<CONST, iterator, const_iterator>::type	iterator;
+			typedef typename choose_type<CONST, const_iterator, iterator>::type	conversion;
+
+			template <bool B>
+			vector_iterator(const vector_iterator<B> &src):
+				_ptr(src.base()) {}
+
+			pointer		base() const { return _ptr; }
+
 			vector_iterator(): _ptr(NULL) {}
-			vector_iterator(pointer ptr) {this->_ptr = ptr;}
+			vector_iterator(pointer ptr):_ptr(ptr) {}
     		reference operator*() const {return *_ptr;}
     		pointer operator->() {return _ptr;}
 			iterator& operator++() {_ptr++; return(*this);} 
@@ -128,9 +137,17 @@ class vector : public vector_base<T, Alloc>
 	{
 		public :
 			typedef typename choose_type<CONST, reference, const_reference>::type reference;
-			typedef typename choose_type<CONST, reference, const_pointer>::type pointer;
+			typedef typename choose_type<CONST, pointer, const_pointer>::type pointer;
+			typedef typename choose_type<CONST, reverse_iterator, const_reverse_iterator>::type	reverse_iterator;
+			
+			template <bool B>
+			vector_reverse_iterator(const vector_reverse_iterator<B> &src):
+				_ptr(src.base()) {}
+			
+			pointer		base() const { return _ptr; }
+
 			vector_reverse_iterator(): _ptr(NULL) {}
-			vector_reverse_iterator(pointer ptr) {this->_ptr = ptr;}
+			vector_reverse_iterator(pointer ptr):_ptr(ptr) {}
     		reference operator*() const {return *_ptr;}
     		pointer operator->() {return _ptr;}
 			reverse_iterator& operator++() {_ptr--; return(*this);} 
@@ -394,7 +411,7 @@ class vector : public vector_base<T, Alloc>
 		return(position++);
 	}
 	template <class InputIterator>
-	void insert(const_iterator position, InputIterator first, InputIterator last,typename std::enable_if<!std::is_integral<InputIterator>::value>::type* = 0)
+	void insert(iterator position, InputIterator first, InputIterator last,typename std::enable_if<!std::is_integral<InputIterator>::value>::type* = 0)
 	{
 		size_type pos; 
 		size_type nbr_elements;
@@ -434,16 +451,16 @@ class vector : public vector_base<T, Alloc>
 		for (const_iterator ptr = first; ptr != last; ptr++)
 			n++;	
 		for (const_iterator ptr = first; ptr != last; ptr++)
-			this->alloc.destroy(&*ptr);
+			this->_alloc.destroy(&*ptr);
 		if (&*last != this->_last)
-			uninitialized_copy_and_destroy(first, this->end() - n, last, this->alloc);
+			uninitialized_copy_and_destroy(first, static_cast<const_iterator>(this->end() - n), last, this->_alloc);
 	}
 	iterator erase (iterator position)
 	{
 		this->alloc.destroy(&*position);
 		iterator copy(&*position);
 		if (*&position != this->_last)
-			uninitialized_copy_and_destroy(position, this->end() - 1, copy, this->alloc());
+			uninitialized_copy_and_destroy(position, this->end() - 1, copy, this->_alloc());
 	}
 };
 

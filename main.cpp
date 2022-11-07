@@ -17,7 +17,11 @@ int main()
 	vector<int> a(6,42);	
 	vector<int> b(6,88);	
 	b.reserve(100);
-	vector<int>::iterator z = b.insert(b.begin() + 2, a.begin(),a.end());
+	vector<int>::iterator start = b.begin()+ 2;
+	vector<int>::iterator end =	b.begin()+ 2;
+	(void)start;
+	
+	b.erase(start, end);
 	for (int i = 0; i < 12;  ++i)
 	{
 		std::cout << b[i] << std::endl;
