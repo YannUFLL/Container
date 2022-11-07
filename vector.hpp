@@ -48,13 +48,16 @@ class vector : public vector_base<T, Alloc>
 	typedef typename allocator_type::reference reference;
 	typedef typename allocator_type::const_reference const_reference;
 	typedef typename allocator_type::const_pointer const_pointer;
-	typedef typename vector<T, Alloc>::vector_iterator<true> const_iterator;
-	typedef typename vector<T, Alloc>::vector_iterator<false> iterator;
-	typedef typename vector<T, Alloc>::vector_reverse_iterator<true> const_reverse_iterator;
-	typedef typename vector<T, Alloc>::vector_reverse_iterator<false> reverse_iterator;
 	typedef std::size_t size_type;
 
 	public :
+	template<bool> class vector_iterator;
+	template<bool> class vector_reverse_iterator;
+	typedef typename vector<T, Alloc>:: template vector_iterator<true> const_iterator;
+	typedef typename vector<T, Alloc>:: template vector_iterator<false> iterator;
+	typedef typename vector<T, Alloc>:: template vector_reverse_iterator<true> const_reverse_iterator;
+	typedef typename vector<T, Alloc>:: template vector_reverse_iterator<false> reverse_iterator;
+
 	template <bool CONST>
 	class vector_iterator : public std::iterator<
 		std::random_access_iterator_tag,
