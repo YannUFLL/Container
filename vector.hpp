@@ -5,6 +5,9 @@
 #include <memory>
 #include "alloc.hpp"
 #include "choose_if_const.hpp"
+#include "iterator_trait.hpp"
+
+namespace ft{
 
 template<typename T, typename Alloc = std::allocator<T> >
 class vector_base{
@@ -72,9 +75,11 @@ class vector : public vector_base<T, Alloc>
 			typedef typename choose_type<CONST, iterator, const_iterator>::type	iterator;
 			typedef typename choose_type<CONST, const_iterator, iterator>::type	conversion;
 
+		
 			template <bool B>
 			vector_iterator(const vector_iterator<B> &src):
 				_ptr(src.base()) {}
+				
 
 			pointer		base() const { return _ptr; }
 
@@ -197,8 +202,12 @@ class vector : public vector_base<T, Alloc>
 	};
 	iterator begin() const {return(iterator(this->_v)); }
 	iterator end() const {return(iterator(this->_space));} // return a invalid memorty address, is just to determin when the boundary was reach
+	const_iterator cbegin() const {return(const_iterator(this->_v)); }
+	const_iterator cend() const {return(const_iterator(this->_space));} // return a invalid memorty address, is just to determin when the boundary was reach
 	reverse_iterator rbegin() const {return(reverse_iterator(this->_space)); }
 	reverse_iterator rend() const {return(reverse_iterator(this->_v));} // return a invalid memorty address, is just to determin when the boundary was reach
+	const_reverse_iterator crbegin() const {return(const_reverse_iterator(this->_space)); }
+	const_reverse_iterator crend() const {return(const_reverse_iterator(this->_v));} // return a invalid memorty address, is just to determin when the boundary was reach
 
 	explicit vector(const allocator_type& alloc = allocator_type()): vector_base<T,Alloc>(alloc, 0) {}
 
@@ -214,14 +223,27 @@ class vector : public vector_base<T, Alloc>
 		size_type n = 0;
 		for (InputIterator ptr = first; ptr != last; ptr++)
 			n++;
-		this->_alloc.allocate(n);
+		this->_v = this->_alloc.allocate(n);
+		this->_space = this->_v + n;
+		this->_last = this->_v + n;
 		uninitialized_copy(this->_v, this->_last, first, this->_alloc );
 	}
 
 
 	vector(const vector& x): vector_base<T,Alloc>(x._alloc, x.size()) 
 	{
-		uninitialized_copy(x.begin(), x.end(), this->_v, this->_alloc);
+		iterator it = x.begin();
+		uninitialized_copy(this->begin(), this->end(), it, this->_alloc);
+	}
+
+	vector& operator=(const vector& other)
+	{
+		if (this != &other)
+		{
+			vector tmp(other);
+			swap(tmp);
+		}
+		return (*this);
 	}
 
 	~vector()	{destroy_element();this->~vector_base<T>();}	
@@ -235,7 +257,7 @@ class vector : public vector_base<T, Alloc>
 	/* CAPACITY */
 	size_type size() const {return size_type(end() - begin());}
 	size_type maxsize() const {return (static_cast<size_type>(std::numeric_limits<size_type>::max()));}
-	size_type capacity() {return (this->_last - this->_v);}
+	size_type capacity() const {return (this->_last - this->_v);}
 	void	resize(size_type n, value_type val = value_type())
 	{
 		reallocate(n,val);
@@ -260,7 +282,7 @@ class vector : public vector_base<T, Alloc>
 	{
 		size_type nbr_elements = this->size();
 		pointer ptr = this->_alloc.allocate(n);
-		uninitialized_copy(ptr, ptr + n, this->_v, this->_alloc);
+		uninitialized_copy(ptr, ptr + std::min(nbr_elements, n), this->_v, this->_alloc);
 		this->~vector();
 		this->_v = ptr; 
 		this->_space = ptr + nbr_elements; 
@@ -287,14 +309,14 @@ class vector : public vector_base<T, Alloc>
 	const_reference operator[](size_type n) const {return (*(this->_v + n));}
 	reference at(size_type n) 
 	{
-		if (n > this->size || n < 0)
+		if (n > this->size() || n < 0)
 			throw(std::out_of_range("vector"));
 		else 
 			return (*(this->_v + n));
 	}
 	const_reference at(size_type n) const 
 	{
-		if (n > this->size || n < 0)
+		if (n > this->size() || n < 0)
 			throw(std::out_of_range("vector"));
 		else 
 				return (*(this->_v + n));
@@ -309,7 +331,7 @@ class vector : public vector_base<T, Alloc>
 	template <class InputIterator> 
 	void assign(InputIterator first, InputIterator last)
 	{
-		size_type n;	
+		size_type n = 0;	
 		for (InputIterator ptr = first; ptr != last; ptr++)
 			n++;
 		if (n > this->size())
@@ -350,7 +372,10 @@ class vector : public vector_base<T, Alloc>
 	{
 		if (this->_space == this->_last)
 		{
-			reallocate(this->size() * 2);
+			if (this->size() == 0)  
+				reallocate(1);
+			else
+				reallocate(this->size() * 2);
 			this->_alloc.construct((this->_space), val);
 			this->_space+= 1;
 		}
@@ -445,29 +470,56 @@ class vector : public vector_base<T, Alloc>
 			this->_space = ptr; 
 		}
 	}
-	iterator erase( const_iterator first, const_iterator last )
+	iterator erase( iterator first, iterator last )
 	{
+		if (first == last)
+			return (last);
 		size_type n = 0;
-		for (const_iterator ptr = first; ptr != last; ptr++)
+		for (iterator ptr = first; ptr != last; ptr++)
 			n++;	
-		for (const_iterator ptr = first; ptr != last; ptr++)
+		for (iterator ptr = first; ptr != last; ptr++)
 			this->_alloc.destroy(&*ptr);
 		if (&*last != this->_last)
-			uninitialized_copy_and_destroy(first, static_cast<const_iterator>(this->end() - n), last, this->_alloc);
+		{
+			uninitialized_copy_and_destroy(first, (this->end() - n), last, this->_alloc);
+			this->_space = this->_space - n;
+			return (last);
+		}
+		this->_space = this->_space - n;
+		return (this->end());
 	}
 	iterator erase (iterator position)
 	{
-		this->alloc.destroy(&*position);
+		if (position == this->end())
+			return (this->end());
+		this->_alloc.destroy(&*position);
 		iterator copy(&*position);
 		if (*&position != this->_last)
-			uninitialized_copy_and_destroy(position, this->end() - 1, copy, this->_alloc());
+			uninitialized_copy_and_destroy(position, this->end() - 1, copy, this->_alloc);
+		this->_space = this->_space - 1;
+		return (position + 1);
 	}
+	void clear()
+	{
+		this->destroy_element();
+	}
+	void swap(vector &other)
+	{
+		std::swap(this->_alloc, other._alloc);
+		std::swap(this->_v, other._v);
+		std::swap(this->_last, other._last);
+		std::swap(this->_space, other._space);
+	}
+	friend void swap(vector &a, vector &b) {a.swap(b);}
 };
 
 
 template<typename T> void swap(vector_base<T>& a, vector_base<T> &b)
 {
 	swap(a._alloc, b._alloc);swap(a._v, b._v);swap(a._space,b._space);swap(a._last,b._last);
+}
+
+
 }
 
 #endif

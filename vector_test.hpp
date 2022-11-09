@@ -1,4 +1,5 @@
 #include <vector>
+#include "vector.hpp"
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -6,8 +7,8 @@
 #include <typeinfo>
 #include "MyChrono.hpp"
 
-#define VEC std::vector
-#define	MVEC std::vector
+#define VEC ft::vector
+#define	MVEC ft::vector
 #define COMPARE_VECTORS(vector, my_vector) ft_compare_vector(vector, my_vector, #vector)
 #define INFO(vector, msg) ft_info_vector(vector, msg)
 #define PERF_VALUE 1000000
@@ -83,14 +84,14 @@ void	ft_compare_vector(VEC<T> vector, MVEC<T> my_vector, std::string name)
 }
 
 template<typename T>
-void	ft_info_vector(VEC<T> vector, std::string name)
+void	ft_info_vector(T &vector, std::string name)
 {
 	std::cout << name << std::endl;
 	std::cout << std::setw(20) << std::left << "size";
 	std::cout << vector.size() << std::endl;
 	std::cout << std::setw(20) << std::left << "capacity";
 	std::cout << vector.capacity() << std::endl;
-	for (typename VEC<T>::iterator it_vec = vector.begin(); it_vec != vector.end(); it_vec++)
+	for (typename T::const_iterator it_vec = vector.begin(); it_vec != vector.end(); it_vec++)
 	{
 		std::cout << *it_vec << "; "; 
 	}
@@ -177,10 +178,10 @@ void	ft_mono_test()
 	my_resize.shrink_to_fit();
 	print_data(my_resize.capacity(), "new capacity after reserve for a shrink to fit: ");
 
-	VEC<T> element_access; 
-	ft_fill_vector(element_access);
 	std::cout << std::endl << std::endl << std::endl;
 	std::cout << std::endl << std::endl << std::endl << "\e[0;33mStarting test... PHASE 4, 'Element access' :\e[0m" << std::endl ;
+	VEC<T> element_access; 
+	ft_fill_vector(element_access);
 	INFO(element_access, "Elements du vecteur avant test 'Element access' : "); 
 
 	print_data(element_access[2], "Element of index 2 : "); 
@@ -331,9 +332,9 @@ void	ft_speed_test()
 	chrono.end();
 	chrono.print_time(STRING(Temps de construction pour via iterateur de vecteur pour  PERF_VALUE  : ));
 
-	typename VEC<T>::iterator middle = vector.begin() + (vector.size() / 2);
+	typename VEC<T>::iterator middle = vector2.begin() + (vector2.size() / 2);
 	chrono.begin();
-	vector2.insert(middle, vector2.begin(), vector2.end());
+	vector2.insert(middle, vector.begin(), vector.end());
 	chrono.end();
 	chrono.print_time(STRING(Temps de remplissage par insertion au milieu d un vecteur : ));
 

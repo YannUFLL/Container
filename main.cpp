@@ -12,13 +12,14 @@ void	ft_mono_test();
 template <typename T>
 void	ft_speed_test();
 
+/*
 int main()
 {
-	vector<int> a(6,42);	
-	vector<int> b(6,88);	
+	ft::vector<int> a(6,42);	
+	ft::vector<int> b(6,88);	
 	b.reserve(100);
-	vector<int>::iterator start = b.begin()+ 2;
-	vector<int>::iterator end =	b.begin()+ 2;
+	ft::vector<int>::iterator start = b.begin()+ 2;
+	ft::vector<int>::iterator end =	b.begin()+ 2;
 	(void)start;
 	
 	b.erase(start, end);
@@ -26,12 +27,12 @@ int main()
 	{
 		std::cout << b[i] << std::endl;
 	}
-}
+}*/
 
 
-/*
+
 int main()
 {
 	ft_mono_test<int>();
 	ft_speed_test<int>();
-}*/
+}
