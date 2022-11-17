@@ -1,5 +1,5 @@
-SRCS =	$(wildcard *.cpp)
-OBJS = ${SRCS:.cpp=.o}
+SRCS =	$(wildcard */*.cpp)
+OBJS = ${addprefix objs/, $(notdir $(SRCS:.cpp=.o))}
 
 NAME = a.out
 
@@ -9,13 +9,14 @@ LINK = c++ -o
 
 RM = rm -f
 
-HEADER = -I include/
+DEBEUG = -g
 
-CFLAGS = -Werror -Wextra -Wall -std=c++98 -g
+CFLAGS = -Werror -Wextra -Wall -std=c++98 
 #-g -fsanitize=thread
 
-.cpp.o: 
-			${CC} ${CFLAGS} -c $< -o ${<:.cpp=.o} ${HEADER}
+objs/%.o: */%.cpp
+	${CC} -o $@ -c $< ${CFLAGS} ${DEBEUG}
+
 
 ${NAME}:	${OBJS}
 			${LINK} ${NAME} ${OBJS} 
