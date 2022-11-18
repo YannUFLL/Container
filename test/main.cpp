@@ -39,18 +39,43 @@ void	ft_print_element(int i, ft::map<int, int> &test)
 
 int main()
 {
+	/*
+	ft::map<int, int> test;
+	test[42] = 42;
+	test[42] = 42;
+	test.erase(42);
+	test.erase(42);
+	*/
 	ft::map<int,int> test;
-	test[1] = 101;
-	test[2] = 102;
-	test[3] = 103;
-	test[4] = 104;
-	test[5] = 105;
-	test.erase(5);
-	test.erase(4);
-	test.erase(3);
-	test.erase(2);
-	test.erase(1);
-	std::cout << std::endl << std::endl;
-	test.erase(1);
-	std::cout << test[1] << std::endl;
+	std::vector<int> number;
+	std::srand(2);
+	int nbr = 100;
+	for (int i = 0; i <= nbr; i++)
+		number.push_back(rand() % 100);
+	std::vector<int>::iterator it;
+	it = number.begin();
+	for (int i = 0; i <= nbr; i++)
+	{
+		std::cout << "index : " << i << "  number : " << number[i] << std::endl; 
+	}
+	for (int i = 0; i <= nbr; i++)
+	{
+		test[*it] = 42;
+		it++;
+	}
+	it = number.begin();
+	std::cout << std::endl << "lancement des test d'affichage : " << std::endl;
+	for (int i = 0; i <= nbr; i++)
+	{
+		std::cout << "valeur : test[" << *it << "] = " << test[*it] << std::endl;
+		std::cout << "supression... : test[" << *it << "]" << std::endl;
+		test.erase(*it);
+		it++;
+	}
+	it = number.begin();
+	for (int i = 0; i <= nbr; i++)
+	{
+		std::cout << test[*it] << std::endl;
+		it++;
+	}
 }

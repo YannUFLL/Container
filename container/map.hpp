@@ -128,7 +128,6 @@ class map
             if (_root == NULL)
                 return (NULL);
             node* pos = _root;
-            std::cout << "   starting_search_tree..." << std::endl;
             while (1)
             {
                 if (pos == NULL)
@@ -137,12 +136,10 @@ class map
                     return (pos); 
                 if (_comp(key, pos->content._first))
                 {
-                        std::cout << "key : " << key << " element : " << pos->content._first << " Go left " << std::endl;
                         pos = pos->left;
                 }
                 else 
                 {
-                        std::cout << "key : " << key << " element : " << pos->content._first << " Go right " << std::endl;
                         pos = pos->right;
                 }
             }
@@ -292,28 +289,38 @@ class map
         }
         void swap_env(node *a, node *b)
         {
-            if (a->parent && a == a->parent->left)
-                a->parent->left = b;
-            else if (a->parent) 
-                a->parent->right = b;
-            if (a->left)
-                a->left->parent = b;
-            if (a->right)
-                a->right->parent = b;
+            if (a->parent && a == a->parent->left) //SKIP car le root n'a pas de parents
+                a->parent->left = b; 
+            else if (a->parent) // SKIP car le route n'a pas de parents 
+                a->parent->right = b; 
+            if (a->left && a->left != b)        
+                a->left->parent = b; // set le parent du fils fauche sur b
+            if (a->right && a->right != b)
+                a->right->parent = b;// set le parent du fils droit sur b
         }
         void swap(node *a, node *b)
         {
+            if (a == _root)
+                _root = b;
+            else if (b == _root)
+                _root = a;
             swap_env(a, b);
             swap_env(b, a);
             node *a_parent = a->parent;
             node *a_left = a->left;
             node *a_right = a->right;
             color_t a_color = a->color; 
-            a->parent = b->parent;
+            if (b->parent == a)
+                a->parent = b;
+            else
+                a->parent = b->parent;
             a->left = b->left;
             a->right = b->right;
             a->color = b->color;
-            b->parent = a_parent;
+            if (a_parent == b)
+                b->parent = a;
+            else   
+                b->parent = a_parent;
             b->left = a_left;
             b->right = a_right;
             b->color = a_color;
@@ -353,10 +360,12 @@ class map
                 {
                     left_rotation(p);
                     p->parent->right->color = black;
+                    p->parent->left->color = black;
                 }
                 else    
                 {
                     right_rotation(p);
+                    p->parent->right->color = black;
                     p->parent->left->color = black;
                 }
                 if (already_delete != 1)
