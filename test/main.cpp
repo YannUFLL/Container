@@ -49,7 +49,7 @@ int main()
 	ft::map<int,int> test;
 	std::vector<int> number;
 	std::srand(2);
-	int nbr = 100;
+	int nbr = 1000;
 	for (int i = 0; i <= nbr; i++)
 		number.push_back(rand() % 100);
 	std::vector<int>::iterator it;

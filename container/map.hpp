@@ -3,6 +3,7 @@
 #define MAP_HPP
 
 #include "../stl_rewrite/ft_pair.hpp"
+#include "map_iterator.hpp"
 #include <cstring>
 #include <functional>
 #include <memory>
@@ -26,6 +27,9 @@ class map
     typedef const value_type& const_reference;
     typedef typename std::allocator_traits<Allocator>::pointer pointer;
     typedef typename std::allocator_traits<Allocator>::const_pointer const_pointer;
+
+    typedef typename ft::map_iterator<true, T> const_iterator;
+    typedef typename ft::map_iterator<false, T> iterator;
     enum color_t {red, black, double_black};
     struct node 
     {
@@ -50,7 +54,10 @@ class map
         }
 
         map(const map& other, const Allocator &alloc): 
-        _alloc_node(node_allocator()), _alloc_pair(alloc), _comp(other._comp) {}
+        _alloc_node(node_allocator()), _alloc_pair(alloc), _comp(other._comp) 
+        {
+
+        }
     
         /*  
         map(std::initializer_list<value_type> init, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()):
@@ -443,6 +450,15 @@ class map
             erase_case_2_child(element);
         return(1);
     }
+    map& operator=(const map& other)
+	{
+		if (this != &other)
+		{
+			map tmp(other);
+			swap(tmp);
+		}
+		return (*this);
+	}
 };
 }
 

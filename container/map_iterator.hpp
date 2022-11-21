@@ -1,4 +1,4 @@
-	template <bool CONST, T>
+	template <bool CONST, typename T>
 	class map_iterator : public std::iterator<
 		std::random_access_iterator_tag,
 		T,
@@ -7,14 +7,6 @@
 		T>
 	{
 		public :
-			typedef typename choose_type<CONST, reference, const_reference>::type reference;
-			typedef typename choose_type<CONST, pointer, const_pointer>::type pointer;
-			typedef typename choose_type<CONST, iterator, const_iterator>::type	iterator;
-			typedef typename choose_type<CONST, const_iterator, iterator>::type	conversion;
-		
-			template <bool B>
-			vector_iterator(const vector_iterator<B> &src):
-				_ptr(src.base()) {}
 				
 
 			pointer		base() const { return _ptr; }
