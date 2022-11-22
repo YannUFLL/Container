@@ -5,29 +5,30 @@ namespace ft
         public :
             typedef T1 first_type;
             typedef T2 second_type;
-            pair(): _first(), _second() {}
-            pair(const T1 &a): _first(a), _second() {}
-            pair(const T1 &a, const T2 &b): _first(a), _second(b) {}
-            pair(const pair<T1, T2>& copy): _first(copy._first), _second(copy._second) {}
+            pair(): first(), second() {}
+            pair(const T1 &a, const T2 &b): first(a), second(b) {}
+	
+			template<typename U1, typename U2>
+			pair(const pair<U1, U2>& p):first(T1(p.first)), second(T2(p.second)) {}
             ~pair() {};
-            friend void    swap(ft::pair<T1,T2> &a, ft::pair<T1,T2> &b)
+            friend void    swap(pair &a, pair &b)
             {
-                ft::pair<T1, T2> c(a);
-                a._first = b._first;
-                a._second = b._second; 
-                b._first = c._first;
-                b._second = c._second;
+                pair c(a);
+                a.first = b.first;
+                a.second = b.second; 
+                b.first = c.first;
+                b.second = c.second;
             }
-            pair& operator=(const pair &assign) 
+           	pair& operator=(const pair &assign) 
             {
-                if (this != assign)
+                if (this != &assign)
                 {
-                    _first = assign._first;
-                    _second = assign._second;
+					first = assign.first;
+                    second = assign.second;
                 }
+				return *this;
             }
-            first_type _first; 
-            second_type _second; 
+            first_type first; 
+            second_type second; 
     };
-
 }

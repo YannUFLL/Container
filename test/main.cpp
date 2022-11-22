@@ -5,13 +5,14 @@
 #include "../test/vector_test.hpp"
 #include "../container/vector.hpp"
 #include "../container/map.hpp"
+#include <map>
 
 
 template<typename T> 
-void	ft_mono_test();
+void	ft_vector_mono_test();
 
 template <typename T>
-void	ft_speed_test();
+void	ft_vector_speed_test();
 
 /*
 int main()
@@ -26,7 +27,7 @@ int main()
 	b.erase(start, end);
 	for (int i = 0; i < 12;  ++i)
 	{
-		std::cout << b[i] << std::endl;
+		ft::cout << b[i] << ft::endl;
 	}
 }*/
 
@@ -36,46 +37,21 @@ void	ft_print_element(int i, ft::map<int, int> &test)
 		std::cout << test[j] << std::endl;
 
 }
-
 int main()
 {
-	/*
 	ft::map<int, int> test;
 	test[42] = 42;
-	test[42] = 42;
-	test.erase(42);
-	test.erase(42);
-	*/
-	ft::map<int,int> test;
-	std::vector<int> number;
-	std::srand(2);
-	int nbr = 1000;
-	for (int i = 0; i <= nbr; i++)
-		number.push_back(rand() % 100);
-	std::vector<int>::iterator it;
-	it = number.begin();
-	for (int i = 0; i <= nbr; i++)
-	{
-		std::cout << "index : " << i << "  number : " << number[i] << std::endl; 
+	test[43] = 42;
+	test[10] = 1;
+	test[52] = 35;
+	test[34] = 35;
+	ft::pair<int, int> pair;
+	pair.first = 1042;
+	pair.second = 2042;
+	test.insert(pair);
+	ft::map<int, int>::iterator it;
+	it = test.end();
+	--it;
+	std::cout << it->first << std::endl;
+	std::cout << it->first << std::endl;
 	}
-	for (int i = 0; i <= nbr; i++)
-	{
-		test[*it] = 42;
-		it++;
-	}
-	it = number.begin();
-	std::cout << std::endl << "lancement des test d'affichage : " << std::endl;
-	for (int i = 0; i <= nbr; i++)
-	{
-		std::cout << "valeur : test[" << *it << "] = " << test[*it] << std::endl;
-		std::cout << "supression... : test[" << *it << "]" << std::endl;
-		test.erase(*it);
-		it++;
-	}
-	it = number.begin();
-	for (int i = 0; i <= nbr; i++)
-	{
-		std::cout << test[*it] << std::endl;
-		it++;
-	}
-}
