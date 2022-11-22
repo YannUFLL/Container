@@ -1,4 +1,3 @@
-
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
@@ -6,6 +5,7 @@
 #include "../stl_rewrite/alloc.hpp"
 #include "../utils/choose_if_const.hpp"
 #include "../stl_rewrite/iterator_trait.hpp"
+#include "../stl_rewrite/lexicographical_compare.hpp"
 
 namespace ft{
 
@@ -514,11 +514,60 @@ class vector : public vector_base<T, Alloc>
 };
 
 
+template <class T, class Alloc>
+bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
+{
+	if (lhs.size() != rhs.size())
+		return (false);
+	typename vector<T, Alloc>::iterator start = lhs.begin();
+	typename vector<T, Alloc>::iterator end = lhs.end();
+	typename vector<T, Alloc>::iterator start_rhs = rhs.begin();
+	for (; start != end; start++)
+	{
+		if (*start != *start_rhs)
+			return (false);
+		++start;
+		++start_rhs;
+	}
+	return (true);
+}
+
+template <class T, class Alloc>
+bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
+{
+	if (lhs == rhs)
+		return (false);
+	return (true);
+}
+
+template <class T, class Alloc>
+bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
+{
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
+
+template <class T, class Alloc>
+bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
+{
+	return (rhs > lhs);
+}
+
+template <class T, class Alloc>
+bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
+{
+	return (!(rhs < lhs));
+}
+
+template <class T, class Alloc>
+bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
+{
+	return (!(lhs < rhs));
+}
+
 template<typename T> void swap(vector_base<T>& a, vector_base<T> &b)
 {
 	swap(a._alloc, b._alloc);swap(a._v, b._v);swap(a._space,b._space);swap(a._last,b._last);
 }
-
 
 }
 

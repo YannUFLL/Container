@@ -411,7 +411,7 @@ class map
 				}
 				p->parent->color = old_color;
 			}
-			else if (b->color == black) 
+			else if (b->color == black)
 			{  
 				b->color = red;
 				if (p->color == red)
@@ -474,7 +474,7 @@ class map
 		}
 		return (*this);
 	}
-	iterator begin()  
+	iterator begin() const 
 	{
 		node *beg;
 		beg = _root;
@@ -490,7 +490,7 @@ class map
 		iterator begin(beg);
 		return (begin);
 	}
-	iterator end()
+	iterator end() const
 	{
 		node *beg;
 		beg = _root;
@@ -554,6 +554,15 @@ class map
 		else 
 			erase_case_2_child(element);
 		return(1);
+	}
+	bool empty() const {return (!_root);}
+	size_type size() const 
+	{
+		iterator start = this->begin();
+		iterator end = this->end();
+		int i = 0;
+		for (;start != end; start++, i++);
+		return (i);
 	}
 };
 }

@@ -1,3 +1,6 @@
+#ifndef VECTOR_TEST
+#define VECTOR_TEST
+
 #include <vector>
 #include "../container/vector.hpp"
 #include <iostream>
@@ -16,9 +19,9 @@
 /*
 NE MARCHE PAS je sais pas pourquoi
 #define STRING(a) #a
+CELUI DU DESSOUS MARCHE BIEN
 */
 
-// CELUI LA MARCHE BIEN
 #define STR(a) #a
 #define STRING(a) STR(a) 
 
@@ -37,12 +40,22 @@ void	fa(int i);
 void	title(std::string name);
 
 template<typename T>
-void	ft_check_value(T value, T control)
+void	ft_check_value(T value, T control, bool endl = 0)
 {
-	if (value == control)
-		std::cout << "\u2705" << std	::endl;
-	else 
-		std::cout << "\u274c" << std::endl;
+	if (endl == 1)
+	{	
+		if (value == control)
+			std::cout << "\u2705" << std	::endl;
+		else 
+			std::cout << "\u274c" << std::endl;
+	}
+	else
+	{
+		if (value == control)
+			std::cout << "\u2705";
+		else 
+			std::cout << "\u274c";
+	}
 }
 
 template<typename T>
@@ -109,8 +122,12 @@ void	ft_fill_vector(VEC<T> &v)
 
 
 template<typename T> 
-void	ft_mono_test()
+void	ft_vector_mono_test()
 {
+//--------------------------------------------------------------------------------------//
+//                                     Constructor                                      //
+//--------------------------------------------------------------------------------------//
+
 	std::cout << std::endl << "\e[0;33mStarting test... PHASE 1 'constructor' :\e[0m" << std::endl;
 	MVEC<T> my_default_constructor; 
 	INFO(my_default_constructor, "Default constructor : ");
@@ -143,6 +160,9 @@ void	ft_mono_test()
 	to_assign = to_copy;
 	ft_compare_vector(to_copy, to_assign, "Assignation operator");
 
+//--------------------------------------------------------------------------------------//
+//                                       Iterator                                       //
+//--------------------------------------------------------------------------------------//
 
 	std::cout << std::endl << std::endl << std::endl << "\e[0;33mStarting test... PHASE 2, 'iterator' :\e[0m" << std::endl ;
 	typename MVEC<T>::iterator my_it;
@@ -163,6 +183,9 @@ void	ft_mono_test()
 	typename MVEC<T>::const_iterator	my_cit = my_iterator_vector.cbegin();
 	my_cit += 5;
 	INFO(my_iterator_vector, "iterator constant");
+//--------------------------------------------------------------------------------------//
+//                                       Capacity                                       //
+//--------------------------------------------------------------------------------------//
 
 	std::cout << std::endl << std::endl << std::endl << "\e[0;33mStarting test... PHASE 3, 'Capacity' :\e[0m" << std::endl ;
 
@@ -179,6 +202,10 @@ void	ft_mono_test()
 	print_data(my_resize.capacity(), "new capacity after reserve for a shrink to fit: ");
 
 	std::cout << std::endl << std::endl << std::endl;
+//--------------------------------------------------------------------------------------//
+//                                    Element access                                    //
+//--------------------------------------------------------------------------------------//
+
 	std::cout << std::endl << std::endl << std::endl << "\e[0;33mStarting test... PHASE 4, 'Element access' :\e[0m" << std::endl ;
 	VEC<T> element_access; 
 	ft_fill_vector(element_access);
@@ -189,7 +216,11 @@ void	ft_mono_test()
 	print_data(element_access.front(), "Element returned by front() : "); 
 	print_data(element_access.back(), "Element returned by back() : "); 
 	print_data(element_access.data(), "Element returned by data : "); 
+	
 
+//--------------------------------------------------------------------------------------//
+//                                       Modifier                                       //
+//--------------------------------------------------------------------------------------//
 
 	std::cout << std::endl << std::endl << std::endl << "\e[0;33mStarting test... PHASE 5, 'Modifier' :\e[0m" << std::endl ;
 	INFO(my_range_constructor, "Element of the vector before test 'modifier' : "); 
@@ -210,7 +241,39 @@ void	ft_mono_test()
 	INFO(my_range_constructor, "After swap with other vector : "); 
 	my_range_constructor.clear();
 	INFO(my_range_constructor, "After clear : "); 
+//--------------------------------------------------------------------------------------//
+//                                 Comparison operator                                  //
+//--------------------------------------------------------------------------------------//
+	
+	std::cout << std::endl << std::endl << std::endl << "\e[0;33mStarting test... PHASE 6, 'comparison operator' :\e[0m" << std::endl ;
+	VEC<T> test;
+	VEC<T> test2;
+	ft_check_value(test == test2, true);
+	test2.push_back(10);
+	ft_check_value(test == test2, false);
+	ft_check_value(test != test2, true);
+	ft_check_value(test <= test2, true);
+	test.push_back(11);
+	ft_check_value(test <= test2, false);
+	test2.push_back(12);
+	ft_check_value(test <= test2, false);
+	test2.clear();
+	test.clear();
+	for (int i = 0; i <= 100; i++)
+	{
+		test.push_back(i);
+		test2.push_back(i);
+	}
+	test.push_back(-42);
+	ft_check_value(test <= test2, false);
+	std::cout << std::endl;
+	std::cout << std::endl;
 }
+
+//--------------------------------------------------------------------------------------//
+//               Test for comparison std::vector and ft::vector : Usless                //
+//--------------------------------------------------------------------------------------//
+
 
 template<typename T> 
 void	ft_dual_test()
@@ -310,10 +373,13 @@ void	ft_dual_test()
 }
 
 template <typename T>
-void	ft_speed_test()
+void	ft_vector_speed_test()
 {
+//--------------------------------------------------------------------------------------//
+//                                      Speed test                                      //
+//--------------------------------------------------------------------------------------//
 
-	std::cout << std::endl <<  "\e[0;33mStarting test... PHASE 6, 'Speed test' :\e[0m" << std::endl ;
+	std::cout << std::endl <<  "\e[0;33mStarting test... PHASE 7, 'Speed test' :\e[0m" << std::endl ;
 	VEC<T> vector;
 	MyChrono chrono;
 	chrono.begin();
@@ -354,3 +420,5 @@ void	ft_speed_test()
 	chrono.end();
 	chrono.print_time(STRING(Temps de traitement d un clear sur un vecteur de  (PERF_VALUE * 10) :  ));
 }
+
+#endif

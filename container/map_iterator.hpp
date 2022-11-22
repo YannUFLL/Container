@@ -14,7 +14,7 @@
 			pointer		base() const { }
 
 			map_iterator(): _n(NULL) {}
-			map_iterator(map_iterator &copy): _last(copy._last) 
+			map_iterator(map_iterator const &copy): _last(copy._last) 
 			{
 				if (copy._n == &copy._dummy)
 						_n = &_dummy;
@@ -30,14 +30,19 @@
 					_n = &_dummy;
 				}
 			}
-    		reference operator*() const {}
-    		pointer operator->() {return (&(_n->content));}
+			reference operator*() const {return (_n->content);}
+			pointer operator->() {return (&(_n->content));}
 			map_iterator& operator++() 
 			{
 				Node *child = NULL;
 				_last = _n;
 				if (_n == &_dummy)
 					return (*this);
+				if (_n->parent == NULL && _n->right == NULL)
+				{
+					_n = &_dummy;
+					return (*this);
+				}
 				if (!_n->right && _n->parent != NULL) 
 				{
 					do	
@@ -62,8 +67,7 @@
 				}
 				return (*this);
 			} 
-			map_iterator operator++(int) 
-			{map_iterator temp = *this; ++(*this); return(temp);} 
+			map_iterator operator++(int) {map_iterator temp = *this; ++(*this); return(temp);} 
 			map_iterator& operator--() 
 			{
 				Node *child = NULL;
@@ -71,6 +75,11 @@
 				{
 					_n = _last;
 					return(*this);
+				}
+				if (_n->parent == NULL && _n->left == NULL)
+				{
+					_n = &_dummy;
+					return (*this);
 				}
 				if (!_n->left && _n->parent != NULL) 
 				{
@@ -111,21 +120,32 @@
 				b._ptr = c._ptr;
 			}
 			map_iterator& operator=(const map_iterator &assign) 
-            {
-                if (this != &assign)
-                {
+			{
+				if (this != &assign)
+				{
 					if (assign._n == &assign._dummy)
 						_n = &_dummy;
 					else
 						_n = assign._n;
 					_last = assign._last;
-                }
+				}
 				return *this; 
-            }
+			}
+			bool operator!=(map_iterator& other)
+			{
+				if (_n == &_dummy && other._n == &other._dummy)
+					return (false);
+				return (_n != other._n);
+			}
+			bool operator==(map_iterator& other)
+			{
+				if (_n == &_dummy && other._n == &other._dummy)
+					return (true);
+				return (_n == other._n);
+			}
 		private : 
 			Node *_n;
 			Node *_last;
 			Node _dummy;
-
 	};
 }
