@@ -6,6 +6,7 @@
 #include "../utils/choose_if_const.hpp"
 #include "../stl_rewrite/iterator_trait.hpp"
 #include "../stl_rewrite/lexicographical_compare.hpp"
+#include "../stl_rewrite/reverse_iterator.hpp"
 
 namespace ft{
 
@@ -58,8 +59,8 @@ class vector : public vector_base<T, Alloc>
 	template<bool> class vector_reverse_iterator;
 	typedef typename vector<T, Alloc>:: template vector_iterator<true> const_iterator;
 	typedef typename vector<T, Alloc>:: template vector_iterator<false> iterator;
-	typedef typename vector<T, Alloc>:: template vector_reverse_iterator<true> const_reverse_iterator;
-	typedef typename vector<T, Alloc>:: template vector_reverse_iterator<false> reverse_iterator;
+	typedef typename ft::reverse_iterator<iterator> reverse_iterator;
+	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 	template <bool CONST>
 	class vector_iterator : public std::iterator<
@@ -85,8 +86,8 @@ class vector : public vector_base<T, Alloc>
 
 			vector_iterator(): _ptr(NULL) {}
 			vector_iterator(pointer ptr):_ptr(ptr) {}
-    		reference operator*() const {return *_ptr;}
-    		pointer operator->() {return _ptr;}
+			reference operator*() const {return *_ptr;}
+			pointer operator->() {return _ptr;}
 			iterator& operator++() {_ptr++; return(*this);} 
 			iterator operator++(int) {iterator temp = *this; ++(*this); return(temp);} 
 			iterator& operator--() {_ptr--; return(*this);} 
@@ -126,74 +127,6 @@ class vector : public vector_base<T, Alloc>
 			void friend iter_swap(iterator &a, iterator &b)
 			{
 				iterator c(a); 
-				a._ptr = b._ptr;
-				b._ptr = c._ptr;
-			}
-		private : 
-			pointer _ptr;
-	};
-		template <bool CONST>
-		class vector_reverse_iterator : public std::iterator<
-		std::random_access_iterator_tag,
-		T,
-		T,
-		T*,
-		T> 
-	{
-		public :
-			typedef typename choose_type<CONST, reference, const_reference>::type reference;
-			typedef typename choose_type<CONST, pointer, const_pointer>::type pointer;
-			typedef typename choose_type<CONST, reverse_iterator, const_reverse_iterator>::type	reverse_iterator;
-			
-			template <bool B>
-			vector_reverse_iterator(const vector_reverse_iterator<B> &src):
-				_ptr(src.base()) {}
-			
-			pointer		base() const { return _ptr; }
-
-			vector_reverse_iterator(): _ptr(NULL) {}
-			vector_reverse_iterator(pointer ptr):_ptr(ptr) {}
-    		reference operator*() const {return *_ptr;}
-    		pointer operator->() {return _ptr;}
-			reverse_iterator& operator++() {_ptr--; return(*this);} 
-			reverse_iterator operator++(int) {reverse_iterator temp = *this; --(*this); return(temp);} 
-			reverse_iterator& operator--() {_ptr++; return(*this);} 
-			reverse_iterator operator--(int) {reverse_iterator temp = *this; ++(*this); return(temp);} 
-			reverse_iterator& operator+=(value_type n){this->_ptr -= n;return(*this);}
-			reverse_iterator& operator-=(value_type n){this->_ptr += n;return(*this);}
-			reverse_iterator friend operator+(reverse_iterator a, size_type n) {reverse_iterator it(a._ptr); it += n ; return (it);}
-			reverse_iterator friend operator-(reverse_iterator a, size_type n) {reverse_iterator it(a._ptr); it -= n ; return (it);}
-			friend size_type operator-(const reverse_iterator &a, const reverse_iterator &b) 
-			{
-				return (a._ptr - b._ptr);
-			}
-			bool operator==(const reverse_iterator &a) const 	
-			{
-				return (a._ptr == this->_ptr);
-			}
-			bool operator!=(const reverse_iterator &a) const 	
-			{
-				return (a._ptr != this->_ptr);
-			}
-			bool friend operator>(reverse_iterator const &a, reverse_iterator const &b) 
-			{
-				return (a._ptr < b._ptr);
-			}
-			bool friend operator<(reverse_iterator const &a, reverse_iterator const &b) 
-			{
-				return (a._ptr > b._ptr);
-			}
-			bool friend operator>=(reverse_iterator const &a, reverse_iterator const &b) 
-			{
-				return (a._ptr <= b._ptr);
-			}
-			bool friend operator<=(reverse_iterator const &a, reverse_iterator const &b) 
-			{
-				return (a._ptr >= b._ptr);
-			}
-			void friend iter_swap(reverse_iterator &a, reverse_iterator &b)
-			{
-				reverse_iterator c(a); 
 				a._ptr = b._ptr;
 				b._ptr = c._ptr;
 			}
@@ -424,7 +357,7 @@ class vector : public vector_base<T, Alloc>
 			reverse_iterator v(this->rbegin());
 			nbr_elements = this->size();
 			pos = return_pos(position);
-			uninitialized_copy_and_destroy(it,  it + (nbr_elements - pos + 1), v, this->_alloc);
+			uninitialized_copy_and_destroy(it,  it + (1), v, this->_alloc);
 			uninitialized_fill(it + (nbr_elements - pos + 1), it + (nbr_elements - pos + 1) + n, val, this->_alloc);
 			this->_space = ptr; 
 		}

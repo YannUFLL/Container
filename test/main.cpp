@@ -8,7 +8,6 @@
 #include "../container/map.hpp"
 #include <map>
 
-
 template<typename T> 
 void	ft_vector_mono_test();
 

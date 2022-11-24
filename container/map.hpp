@@ -1,13 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map.hpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
+/*   Updated: 2022/11/24 19:56:04 by ydumaine         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #ifndef MAP_HPP
 #define MAP_HPP
 
 #include "../stl_rewrite/ft_pair.hpp"
+#include "../stl_rewrite/reverse_iterator.hpp"
 #include "map_iterator.hpp"
 #include <cstring>
 #include <functional>
 #include <memory>
 #include <initializer_list>
+
 
 namespace ft {
 template <typename Key, typename T, typename Compare = std::less<Key>,
@@ -31,6 +45,8 @@ class map
 	public :
 	typedef typename ft::map_iterator<T, node, const value_type> const_iterator;
 	typedef typename ft::map_iterator<T, node, value_type> iterator;
+	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
+	typedef typename ft::reverse_iterator<iterator> reverse_iterator;
 
 	private : 
 	enum color_t {red, black, double_black};
@@ -44,22 +60,39 @@ class map
 		value_type  content;
 	};
 	public :
-		/********* CONSTRUCTOR *********/
+//--------------------------------------------------------------------------------------//
+//                                     Constructors                                     //
+//--------------------------------------------------------------------------------------//
+
 		explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()):
-		_root(NULL), _alloc_node(node_allocator()), _alloc_pair(alloc), _comp(comp), _dummy(){}
+		_root(NULL), _alloc_node(node_allocator()), _alloc_pair(alloc), _comp(comp) {}
 
 		template<class InputIt>
 		map(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator& alloc = Allocator()):
-		_alloc_node(node_allocator()), _alloc_pair(alloc), _comp(comp), _dummy()
+		_alloc_node(node_allocator()), _alloc_pair(alloc), _comp(comp)
 		{
 			for(;first != last; first++)
 				insert(*first);
 		}
 
 		map(const map& other, const Allocator &alloc): 
-		_alloc_node(node_allocator()), _alloc_pair(alloc), _comp(other._comp), _dummy()
+		_alloc_node(node_allocator()), _alloc_pair(alloc), _comp(other._comp)
 		{
 
+		}
+
+		~map()
+		{
+			/*
+			map::iterator start = this->begin();
+			map::iterator end = this->end();
+			for (;start != end; start++)
+			{
+				_alloc_pair.destroy(&*start);
+				_alloc_node.destroy(&*start);
+				_alloc_node.deallocate(&*start, 1);
+			}
+			*/
 		}
 	
 		/*  
@@ -68,12 +101,15 @@ class map
 		*/
 
 
+//--------------------------------------------------------------------------------------//
+//                                    Red Black Tree                                    //
+//--------------------------------------------------------------------------------------//
+
 	private :
 		node *_root;
 		node_allocator _alloc_node;
 		allocator_type _alloc_pair;
 		key_compare _comp;
-		node _dummy;
 
 		node* parent(node *n) {return (n->parent);}
 		node* grandparent(node *n) 
@@ -454,17 +490,23 @@ class map
 		_alloc_node.destroy(n);
 		_alloc_node.deallocate(n, 1);
 	}
-	 public :
-	mapped_type& operator[](const key_type& k) 
+	void	erase_element(node *element)
 	{
-		node *element = search_element(k);
 		if (element == NULL)
-		{
-			element = new_node(value_type(k, mapped_type()));
-			insert(element);
-		} 
-		return (element->content.second);
+			return ;
+		if (element->right == NULL || element->left == NULL)
+			erase_case_1or0_child(element);
+		else 
+			erase_case_2_child(element);
 	}
+//--------------------------------------------------------------------------------------//
+//                                                                                      //
+//                                    Public Members                                    //
+//                                                                                      //
+//--------------------------------------------------------------------------------------//
+
+	 public :
+
 	map& operator=(const map& other)
 	{
 		if (this != &other)
@@ -474,6 +516,10 @@ class map
 		}
 		return (*this);
 	}
+//--------------------------------------------------------------------------------------//
+//                                      Iterators                                       //
+//--------------------------------------------------------------------------------------//
+
 	iterator begin() const 
 	{
 		node *beg;
@@ -506,6 +552,111 @@ class map
 		iterator it(beg, 1);
 		return (it);
 	}
+	reverse_iterator rbegin() const
+	{
+		reverse_iterator it(this->end());
+		return (it);
+	}
+		reverse_iterator rend() const 
+	{
+		reverse_iterator it(this->begin());	
+		return (it);
+	}
+	const_iterator cbegin() const 
+	{
+		node *beg;
+		beg = _root;
+		if (_root == NULL)
+		{
+			const_iterator begin(_root);
+			return (begin);
+		}
+		while (beg->left != NULL)
+		{
+			beg = beg->left;
+		}
+		const_iterator begin(beg);
+		return (begin);
+	}
+	const_iterator cend() const
+	{
+		node *beg;
+		beg = _root;
+		if (_root == NULL)
+		{
+			const_iterator it(_root);
+			return (it);
+		}
+		while (beg->right != NULL)
+		{
+			beg = beg->right;
+		}
+		const_iterator it(beg, 1);
+		return (it);
+	}
+	const_reverse_iterator crbegin() const
+	{
+		const_reverse_iterator it(this->cend());
+		return (it);
+	}
+	const_reverse_iterator crend() const 
+	{
+		const_reverse_iterator it(this->cbegin());
+		return (it);
+	}
+
+
+
+//--------------------------------------------------------------------------------------//
+//                                       Capacity                                       //
+//--------------------------------------------------------------------------------------//
+
+	bool empty() const {return (!_root);}
+	size_type size() const 
+	{
+		iterator start = this->begin();
+		iterator end = this->end();
+		int i = 0;
+		for (;start != end; start++, i++);
+		return (i);
+	}
+	size_type max_size() const
+	{
+		return (_alloc_node.max_size());
+	}
+//--------------------------------------------------------------------------------------//
+//                                   Element Access                                     //
+//--------------------------------------------------------------------------------------//
+
+	mapped_type& operator[](const key_type& k) 
+	{
+		node *element = search_element(k);
+		if (element == NULL)
+		{
+			element = new_node(value_type(k, mapped_type()));
+			insert(element);
+		} 
+		return (element->content.second);
+	}
+	mapped_type& at(const Key& key)
+	{
+		node *element = search_element(key);
+		if (!element)
+			throw std::out_of_range("map::at: key not found map");
+		else
+			return (element->content.second);
+	}
+	const mapped_type& at(const Key& key) const
+	{
+		node *element = search_element(key);
+		if (!element)
+			throw std::out_of_range("map::at: key not found map");
+		else
+			return (element->content.second);
+	}
+//--------------------------------------------------------------------------------------//
+//                                       Modifier                                       //
+//--------------------------------------------------------------------------------------//
 
 	ft::pair<iterator, bool> insert(const ft::pair<const int, int> &value)
 	{
@@ -526,7 +677,7 @@ class map
 		pair.second = false;
 		return (pair);
 	}
-	ft::pair<iterator, bool> insert(iterator pos, const value_type& value) 
+	iterator insert(iterator pos, const value_type& value) 
 	{
 		node *element = search_element(value.first);
 		if (element == NULL)
@@ -543,27 +694,52 @@ class map
 		while (first != last)
 			insert(*first++);
 	}
-
 	size_type	erase(const key_type &k)
 	{
 		node *element = search_element(k);
 		if (element == NULL)
 			return (0);
-		if (element->right == NULL || element->left == NULL)
-			erase_case_1or0_child(element);
-		else 
-			erase_case_2_child(element);
+		erase_element(element);
 		return(1);
 	}
-	bool empty() const {return (!_root);}
-	size_type size() const 
+	void erase(iterator first, iterator last)
 	{
-		iterator start = this->begin();
-		iterator end = this->end();
-		int i = 0;
-		for (;start != end; start++, i++);
-		return (i);
+		for (first != last; first++;)
+		{
+			node *element = search_element(first->first); 
+			erase_element(element);
+		}
 	}
+	void erase(iterator position)
+	{
+			node *element = search_element(position->first); 
+			erase_element(element);
+	}
+	void swap(map& x)
+	{
+		std::swap(_root, x._root);
+		std::swap(_alloc_node, x._alloc_node);
+		std::swap(_alloc_pair, x._alloc_pair);
+		std::swap(_comp, x._comp);
+	}
+
+	void clear()
+	{
+		erase(this->begin(), this->end());
+	}
+//--------------------------------------------------------------------------------------//
+//                                      Observers                                       //
+//--------------------------------------------------------------------------------------//
+	
+//--------------------------------------------------------------------------------------//
+//                                      Operations                                      //
+//--------------------------------------------------------------------------------------//
+
+//--------------------------------------------------------------------------------------//
+//                                      Allocator                                       //
+//--------------------------------------------------------------------------------------//
+
+
 };
 }
 

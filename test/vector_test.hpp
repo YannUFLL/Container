@@ -42,6 +42,7 @@ void	title(std::string name);
 template<typename T>
 void	ft_check_value(T value, T control, bool endl = 0)
 {
+	usleep(100000);
 	if (endl == 1)
 	{	
 		if (value == control)
