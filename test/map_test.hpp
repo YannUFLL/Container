@@ -12,6 +12,7 @@
 #include "../test/vector_test.hpp"
 
 #define MAP ft::map<T1, T2>
+#define PAIR ft::pair<T1, T2>
 #define PERF_VALUE 1000000
 
 template <typename T1, typename T2>
@@ -38,6 +39,7 @@ void	ft_map_mono_test()
 //--------------------------------------------------------------------------------------//
 //                                       Iterator                                       //
 //--------------------------------------------------------------------------------------//
+/*
 	ft_title("Iterator : ");
 	MAP iterator;
 	typename MAP::iterator start = iterator.begin();
@@ -87,6 +89,7 @@ void	ft_map_mono_test()
 //--------------------------------------------------------------------------------------//
 //                                       Capacity                                       //
 //--------------------------------------------------------------------------------------//
+
 	ft_title("Capacity : ");
 	MAP size;
 	ft_check_value(size.size(),static_cast<unsigned long int>(0));
@@ -97,30 +100,77 @@ void	ft_map_mono_test()
 	}
 	ft_check_value(size.empty(),false);
 	ft_check_value(size.size(),static_cast<unsigned long int>(1452));
+	
 //--------------------------------------------------------------------------------------//
 //                                    Element Access                                    //
 //--------------------------------------------------------------------------------------//
+
 	ft_title("Element Access : ");
-	MAP map_EA;
-	map_EA[1] = 42;
-	ft_check_value(map_EA[1], 42);
+	MAP map_ea;
+	map_ea[1] = 42;
+	ft_check_value(map_ea[1], 42);
 	try
 	{
-		map_EA.at(2);
+		map_ea.at(2);
 	}
 	catch (std::exception &e)
 	{
 		ft_check_value(1, 1);
 	}
-	ft_check_value(map_EA.at(1), 42);
-	map_EA[1] = 84;
-	ft_check_value(map_EA.at(1), 84);
-	ft_fulling_map(map_EA);
-	ft_check_value(map_EA.at(42), 42);
+	ft_check_value(map_ea.at(1), 42);
+	map_ea[1] = 84;
+	ft_check_value(map_ea.at(1), 84);
+	ft_fulling_map(map_ea);
+	ft_check_value(map_ea.at(42), 42);
+	*/
 
 //--------------------------------------------------------------------------------------//
 //                                      Modifiers                                       //
 //--------------------------------------------------------------------------------------//
+
+ft_title("Modifier : ");
+MAP map_m;
+PAIR p;
+p.first = 142; p.second = 42;
+//map_m.insert(p);
+//ft_check_value(map_m.at(142), 42);
+
+for (int i = 0; i < 100000; i++)
+{
+	if (i == 50)
+		{ p.first = i; p.second = 4200;}
+	else
+		{p.first = i; p.second = 99;}
+	map_m.insert(p);
+
+}
+
+
+
+//ft_check_value(map_m.at(50), 4200);
+/*
+MAP map_m2;
+
+map_m2.insert(map_m.begin(), map_m.end());
+ft_check_value(map_m2.size(), static_cast<unsigned long int>(101));
+//ft_check_value(map_m2.at(50), 4200);
+typename MAP::iterator m2_it = map_m2.begin();
+for (int i = 0; i < 50; i++)
+	m2_it++;
+map_m2.erase(m2_it);
+ft_check_value(map_m2[50], 0);
+MAP map_m3;
+map_m3[50] = 43;
+map_m3.swap(map_m2);
+ft_check_value(map_m2[50], 43);
+std::cout << map_m3.size() << std::endl;
+map_m3.erase(map_m3.begin(), map_m3.end());
+std::cout << map_m3.size() << std::endl;
+ft_check_value(map_m3.size(),static_cast<unsigned long int>(0));
+ft_check_value(map_m2[1],0);
+*/
+
+
 
 
 //--------------------------------------------------------------------------------------//

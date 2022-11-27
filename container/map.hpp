@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/11/24 19:56:04 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/11/27 01:34:26 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,24 +83,9 @@ class map
 
 		~map()
 		{
-			/*
-			map::iterator start = this->begin();
-			map::iterator end = this->end();
-			for (;start != end; start++)
-			{
-				_alloc_pair.destroy(&*start);
-				_alloc_node.destroy(&*start);
-				_alloc_node.deallocate(&*start, 1);
-			}
-			*/
+			this->clear();
 		}
 	
-		/*  
-		map(std::initializer_list<value_type> init, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()):
-		_alloc_node(node_allocator()), _alloc_pair(alloc), _comp(comp) {}
-		*/
-
-
 //--------------------------------------------------------------------------------------//
 //                                    Red Black Tree                                    //
 //--------------------------------------------------------------------------------------//
@@ -402,11 +387,21 @@ class map
 			swap(n, inorder);
 			erase_case_1or0_child(n);
 		}
+			node* rt_red_child(node *n)
+		{
+			if (n == NULL)
+				return (NULL);
+			if (n->right != NULL && n->right->color == red)
+				return(n->right);
+			if (n->left != NULL && n->left->color == red)
+				return(n->left);
+			return(NULL);
+		}
 		void erase_rebalancing_tree(node *n, bool already_delete)
 		{
 			node *b = brother(n);
 			node *p = parent(n);
-			node *child_brother = if_one_child_rt(b);
+			node *child_brother = rt_red_child(b);
 			
 			if (b->color == black && ((b->left && b->left->color == red) || (b->right && b->right->color == red))) // CASE ONE
 			{
@@ -415,14 +410,14 @@ class map
 				{
 					left_rotation(b);
 					b->color = red;
-					child_brother->color = black;
+					b->parent->color = black;
 					child_brother = b;
 				}
 				if (n == p->left && child_brother == b->left)
 				{
 					right_rotation(b);
 					b->color = red;
-					child_brother->color = black;
+					b->parent->color = black;
 					child_brother = b;
 				}
 				if (n == p->left)
@@ -445,13 +440,13 @@ class map
 					n->parent->right = NULL;
 					delete_node(n);
 				}
+				if (n->color == double_black)
+					n->color = black;
 				p->parent->color = old_color;
 			}
 			else if (b->color == black)
 			{  
 				b->color = red;
-				if (p->color == red)
-					p->color = black;
 				if (already_delete != 1)
 				{
 					if (n->parent && n->parent->left == n)
@@ -459,9 +454,17 @@ class map
 					else if (n->parent)
 						n->parent->right = NULL;
 					delete_node(n);
+				}	
+				if (p->color == red)
+				{
+					p->color = black;
+					if (already_delete != 1 && n->color == double_black)
+					n->color = black;
 				}
 				else if (p != _root)
 				{
+					if (already_delete != 1  && n->color == double_black)
+						n->color = black;
 					p->color = double_black;
 					erase_rebalancing_tree(p, 1);
 				}
@@ -474,7 +477,7 @@ class map
 					left_rotation(p);
 				p->color = red;
 				b->color = black;
-				erase_rebalancing_tree(p, 0);
+				erase_rebalancing_tree(n, already_delete);
 			}
 		}
 	node* new_node(value_type content = value_type())
@@ -704,9 +707,11 @@ class map
 	}
 	void erase(iterator first, iterator last)
 	{
-		for (first != last; first++;)
+		for (;first != last;)
 		{
+			//std::cout<< "valeur de l'iterator first : " << first->first << std::endl;
 			node *element = search_element(first->first); 
+			++first;
 			erase_element(element);
 		}
 	}
