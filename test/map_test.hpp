@@ -13,7 +13,8 @@
 
 #define MAP ft::map<T1, T2>
 #define PAIR ft::pair<T1, T2>
-#define PERF_VALUE 1000000
+#define STR(a) #a
+#define STRING(a) STR(a) 
 
 template <typename T1, typename T2>
 void	ft_fulling_map(MAP &map)
@@ -34,12 +35,15 @@ void	ft_title(std::string title)
 }
 
 template <typename T1, typename T2>
-void	ft_map_mono_test()	
+void	ft_map_test()	
 {
 //--------------------------------------------------------------------------------------//
 //                                       Iterator                                       //
 //--------------------------------------------------------------------------------------//
 
+
+	std::cout << std::endl << "\e[0;31m		Starting map test \e[0m" << std::endl;
+	usleep(2000000);
 	ft_title("Iterator : ");
 	MAP iterator;
 	typename MAP::iterator start = iterator.begin();
@@ -167,17 +171,86 @@ ft_check_value(map_m3.size(),static_cast<unsigned long int>(0));
 ft_check_value(map_m2[1],0);
 
 
-
-
-
+MAP map_m4;
+try
+{
+	map_m4.at(42);
+}
+catch(const std::exception& e)
+{
+	ft_check_value(1,1);
+}
+	ft_check_value(map_m4.size(),static_cast<unsigned long int>(0));
 
 //--------------------------------------------------------------------------------------//
 //                                      Observers                                       //
 //--------------------------------------------------------------------------------------//
-	
+ft_title("Observer : ");
+MAP map_ob;
+ft_check_value(map_ob.count(42), static_cast<unsigned long int>(0));
+map_ob[42] = 42;
+map_ob[42] = 43;
+map_ob[42] = 44;
+ft_check_value(map_ob.count(42), static_cast<unsigned long int>(1));
+map_ob[1] = 42;
+map_ob[2] = 42;
+map_ob[3] = 42;
+map_ob[4] = 42;
+map_ob[5] = 42;
+map_ob[8] = 42;
+typename MAP::iterator it_ob = map_ob.find(3);
+it_ob++;
+ft_check_value(it_ob->first, 4);
+it_ob = map_ob.find(100000);
+ft_check_value(it_ob, map_ob.end());
+it_ob = map_ob.lower_bound(2);
+ft_check_value(it_ob->first, 2);
+it_ob = map_ob.lower_bound(6);
+ft_check_value(it_ob->first, 8);
+it_ob = map_ob.upper_bound(9);
+ft_check_value(it_ob, map_ob.end());
+it_ob = map_ob.upper_bound(5);
+ft_check_value(it_ob->first, 8);
+std::pair<typename MAP::iterator, typename MAP::iterator> pair = map_ob.equal_range(5);
+ft_check_value(pair.first->first, 5);
+ft_check_value(pair.second->first, 8);
+
+
 //--------------------------------------------------------------------------------------//
-//                                      Operations                                      //
+//                                      Operator                                        //
 //--------------------------------------------------------------------------------------//
+ft_title("Operator : ");
+
+MAP map_op;
+map_op[0] = 5;
+map_op[1] = 42;
+map_op[2] = 43;
+
+MAP map_op2;
+map_op2[0] = 5;
+map_op2[1] = 42;
+map_op2[2] = 43;
+
+ft_check_value(map_op == map_op2, true);
+ft_check_value(map_op != map_op2, false);
+map_op2[4] = 43;
+ft_check_value(map_op == map_op2, false);
+ft_check_value(map_op != map_op2, true);
+map_op2.erase(4);
+ft_check_value(map_op == map_op2, true);
+map_op2[2] = 44;
+ft_check_value(map_op == map_op2, false);
+map_op2[2] = 43;
+
+
+ft_check_value(map_op <= map_op2, true);
+ft_check_value(map_op >= map_op2, true);
+ft_check_value(map_op < map_op2, false);
+ft_check_value(map_op > map_op2, false);
+map_op.clear();
+map_op2.clear();
+ft_check_value(map_op == map_op2, true);
+
 
 //--------------------------------------------------------------------------------------//
 //                                      Allocator                                       //
@@ -186,6 +259,34 @@ ft_check_value(map_m2[1],0);
 //--------------------------------------------------------------------------------------//
 //                                      Speed Test                                      //
 //--------------------------------------------------------------------------------------//
+	ft_title("Speed Test : ");
+	std::cout << std::endl;
+	MAP map_s1;
+	MyChrono chrono;
+	chrono.begin();
+	for (int i = 0; i < PERF_VALUE; i++)
+		map_s1[i];
+	chrono.end();
+	chrono.print_time(STRING(time insert PERF_VALUE elements : ));
+
+	chrono.begin();
+	for (int i = 0; i < PERF_VALUE; i++)
+		map_s1.erase(i);
+	chrono.end();
+	chrono.print_time(STRING(time erase PERF_VALUE elements : ));
+
+	chrono.begin();
+	for (int i = 0; i < PERF_VALUE; i++)
+	map_s1[rand()] = rand();
+	chrono.end();
+	chrono.print_time(STRING(time insert random PERF_VALUE elements : ));
+		
+	chrono.begin();
+	map_s1.clear();
+	chrono.end();
+	chrono.print_time(STRING(time clear map random PERF_VALUE elements : ));
+
+
 }
 
 

@@ -27,3 +27,11 @@ void	title(std::string name)
 {
 	std::cout << std::setw(40) << std::left << name ;
 }
+
+void ft_wait()
+{
+	std::cout << "Please press any key to continue... " << std::endl;
+	system("read");
+		for (int i = 0; i < 100; i++)
+		std::cout << std::endl;
+}

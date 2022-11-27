@@ -9,12 +9,17 @@
 #include <map>
 
 template<typename T> 
-void	ft_vector_mono_test();
+void	ft_vector_test();
 
-template <typename T>
-void	ft_vector_speed_test();
 
 int main()
 {
-	ft_map_mono_test<int, int>();
+	for (int i = 0; i < 100; i++)
+		std::cout << std::endl;
+	ft_vector_test<int>();
+	std::cout << "Please press any key to start map test... " << std::endl;
+	system("read");
+	for (int i = 0; i < 100; i++)
+		std::cout << std::endl;
+	ft_map_test<int, int>();
 }

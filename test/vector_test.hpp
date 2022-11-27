@@ -38,11 +38,12 @@ void	ok(int i);
 void	fa(void);
 void	fa(int i);
 void	title(std::string name);
+void	ft_wait();
 
 template<typename T>
 void	ft_check_value(T value, T control, bool endl = 0)
 {
-	usleep(100000);
+	usleep(50000);
 	if (endl == 1)
 	{	
 		if (value == control)
@@ -100,14 +101,17 @@ void	ft_compare_vector(VEC<T> vector, MVEC<T> my_vector, std::string name)
 template<typename T>
 void	ft_info_vector(T &vector, std::string name)
 {
-	std::cout << name << std::endl;
-	std::cout << std::setw(20) << std::left << "size";
+	std::cout <<"\e[0;34m" << name << "\e[0m"<< std::endl;
+	std::cout << std::setw(20) << std::left << "Size";
 	std::cout << vector.size() << std::endl;
-	std::cout << std::setw(20) << std::left << "capacity";
+	std::cout << std::setw(20) << std::left << "Capacity";
 	std::cout << vector.capacity() << std::endl;
+	std::cout << std::setw(20) << std::left << "Content : ";
+	if (vector.begin() == vector.end())
+	std::cout << "empty " << std::endl;
 	for (typename T::const_iterator it_vec = vector.begin(); it_vec != vector.end(); it_vec++)
 	{
-		std::cout << *it_vec << "; "; 
+		std::cout << *it_vec << ";"; 
 	}
 	std::cout << std::endl << std::endl ;
 }
@@ -123,12 +127,14 @@ void	ft_fill_vector(VEC<T> &v)
 
 
 template<typename T> 
-void	ft_vector_mono_test()
+void	ft_vector_test()
 {
 //--------------------------------------------------------------------------------------//
 //                                     Constructor                                      //
 //--------------------------------------------------------------------------------------//
 
+	std::cout << std::endl << "\e[0;31m		Starting vector test \e[0m" << std::endl << std::endl;
+	usleep(1000000);
 	std::cout << std::endl << "\e[0;33mStarting test... PHASE 1 'constructor' :\e[0m" << std::endl;
 	MVEC<T> my_default_constructor; 
 	INFO(my_default_constructor, "Default constructor : ");
@@ -160,6 +166,7 @@ void	ft_vector_mono_test()
 	ft_fill_vector(to_copy);
 	to_assign = to_copy;
 	ft_compare_vector(to_copy, to_assign, "Assignation operator");
+	ft_wait();
 
 //--------------------------------------------------------------------------------------//
 //                                       Iterator                                       //
@@ -184,6 +191,8 @@ void	ft_vector_mono_test()
 	typename MVEC<T>::const_iterator	my_cit = my_iterator_vector.cbegin();
 	my_cit += 5;
 	INFO(my_iterator_vector, "iterator constant");
+	ft_wait();
+
 //--------------------------------------------------------------------------------------//
 //                                       Capacity                                       //
 //--------------------------------------------------------------------------------------//
@@ -203,6 +212,7 @@ void	ft_vector_mono_test()
 	print_data(my_resize.capacity(), "new capacity after reserve for a shrink to fit: ");
 
 	std::cout << std::endl << std::endl << std::endl;
+	ft_wait();
 //--------------------------------------------------------------------------------------//
 //                                    Element access                                    //
 //--------------------------------------------------------------------------------------//
@@ -217,6 +227,7 @@ void	ft_vector_mono_test()
 	print_data(element_access.front(), "Element returned by front() : "); 
 	print_data(element_access.back(), "Element returned by back() : "); 
 	print_data(element_access.data(), "Element returned by data : "); 
+	ft_wait();
 	
 
 //--------------------------------------------------------------------------------------//
@@ -242,6 +253,7 @@ void	ft_vector_mono_test()
 	INFO(my_range_constructor, "After swap with other vector : "); 
 	my_range_constructor.clear();
 	INFO(my_range_constructor, "After clear : "); 
+	ft_wait();
 //--------------------------------------------------------------------------------------//
 //                                 Comparison operator                                  //
 //--------------------------------------------------------------------------------------//
@@ -269,6 +281,52 @@ void	ft_vector_mono_test()
 	ft_check_value(test <= test2, false);
 	std::cout << std::endl;
 	std::cout << std::endl;
+	ft_wait();
+
+//--------------------------------------------------------------------------------------//
+//                                      Speed test                                      //
+//--------------------------------------------------------------------------------------//
+
+	std::cout << std::endl <<  "\e[0;33mStarting test... PHASE 7, 'Speed test' :\e[0m" << std::endl ;
+	VEC<T> vector;
+	MyChrono chrono;
+	chrono.begin();
+	for (int i = 0; i < PERF_VALUE; i++)
+		vector.push_back(i);
+	chrono.end();
+	chrono.print_time(STRING(Temps de remplissage pour PERF_VALUE  : ));
+
+	chrono.begin();
+	VEC<T> vector2(PERF_VALUE, 42);
+	chrono.end();
+	chrono.print_time(STRING(Temps de construction pour PERF_VALUE  : ));
+
+	chrono.begin();
+	VEC<T> vector3(vector2.begin(), vector2.end());
+	chrono.end();
+	chrono.print_time(STRING(Temps de construction pour via iterateur de vecteur pour  PERF_VALUE  : ));
+
+	typename VEC<T>::iterator middle = vector2.begin() + (vector2.size() / 2);
+	chrono.begin();
+	vector2.insert(middle, vector.begin(), vector.end());
+	chrono.end();
+	chrono.print_time(STRING(Temps de remplissage par insertion au milieu d un vecteur : ));
+
+	chrono.begin();
+	vector2.resize(PERF_VALUE * 10 );
+	chrono.end();
+	chrono.print_time(STRING(Temps de traitement d un resize de (PERF_VALUE  * 10)  : ));
+	middle = vector3.begin() + (vector3.size() / 2);
+
+	chrono.begin();
+	vector3.erase(middle);
+	chrono.end();
+	chrono.print_time("Temps de suppresionn d'un element au milieu : ");
+
+	chrono.begin();
+	vector2.clear();
+	chrono.end();
+	chrono.print_time(STRING(Temps de traitement d un clear sur un vecteur de  (PERF_VALUE * 10) :  ));
 }
 
 //--------------------------------------------------------------------------------------//
@@ -371,55 +429,6 @@ void	ft_dual_test()
 	my_resize.resize(50000);
 	INFO(my_resize, "RESIZE OF 10000");
 
-}
-
-template <typename T>
-void	ft_vector_speed_test()
-{
-//--------------------------------------------------------------------------------------//
-//                                      Speed test                                      //
-//--------------------------------------------------------------------------------------//
-
-	std::cout << std::endl <<  "\e[0;33mStarting test... PHASE 7, 'Speed test' :\e[0m" << std::endl ;
-	VEC<T> vector;
-	MyChrono chrono;
-	chrono.begin();
-	for (int i = 0; i < PERF_VALUE; i++)
-		vector.push_back(i);
-	chrono.end();
-	chrono.print_time(STRING(Temps de remplissage pour PERF_VALUE  : ));
-
-	chrono.begin();
-	VEC<T> vector2(PERF_VALUE, 42);
-	chrono.end();
-	chrono.print_time(STRING(Temps de construction pour PERF_VALUE  : ));
-
-	chrono.begin();
-	VEC<T> vector3(vector2.begin(), vector2.end());
-	chrono.end();
-	chrono.print_time(STRING(Temps de construction pour via iterateur de vecteur pour  PERF_VALUE  : ));
-
-	typename VEC<T>::iterator middle = vector2.begin() + (vector2.size() / 2);
-	chrono.begin();
-	vector2.insert(middle, vector.begin(), vector.end());
-	chrono.end();
-	chrono.print_time(STRING(Temps de remplissage par insertion au milieu d un vecteur : ));
-
-	chrono.begin();
-	vector2.resize(PERF_VALUE * 10 );
-	chrono.end();
-	chrono.print_time(STRING(Temps de traitement d un resize de (PERF_VALUE  * 10)  : ));
-	middle = vector3.begin() + (vector3.size() / 2);
-
-	chrono.begin();
-	vector3.erase(middle);
-	chrono.end();
-	chrono.print_time("Temps de suppresionn d'un element au milieu : ");
-
-	chrono.begin();
-	vector2.clear();
-	chrono.end();
-	chrono.print_time(STRING(Temps de traitement d un clear sur un vecteur de  (PERF_VALUE * 10) :  ));
 }
 
 #endif
