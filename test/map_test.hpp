@@ -39,7 +39,7 @@ void	ft_map_mono_test()
 //--------------------------------------------------------------------------------------//
 //                                       Iterator                                       //
 //--------------------------------------------------------------------------------------//
-/*
+
 	ft_title("Iterator : ");
 	MAP iterator;
 	typename MAP::iterator start = iterator.begin();
@@ -122,20 +122,21 @@ void	ft_map_mono_test()
 	ft_check_value(map_ea.at(1), 84);
 	ft_fulling_map(map_ea);
 	ft_check_value(map_ea.at(42), 42);
-	*/
+	
 
 //--------------------------------------------------------------------------------------//
 //                                      Modifiers                                       //
 //--------------------------------------------------------------------------------------//
 
+
 ft_title("Modifier : ");
 MAP map_m;
 PAIR p;
 p.first = 142; p.second = 42;
-//map_m.insert(p);
-//ft_check_value(map_m.at(142), 42);
+map_m.insert(p);
+ft_check_value(map_m.at(142), 42);
 
-for (int i = 0; i < 100000; i++)
+for (int i = 0; i <10000 ; i++)
 {
 	if (i == 50)
 		{ p.first = i; p.second = 4200;}
@@ -144,31 +145,28 @@ for (int i = 0; i < 100000; i++)
 	map_m.insert(p);
 
 }
-
-
-
-//ft_check_value(map_m.at(50), 4200);
-/*
+ft_check_value(map_m.at(50), 4200);
 MAP map_m2;
 
 map_m2.insert(map_m.begin(), map_m.end());
-ft_check_value(map_m2.size(), static_cast<unsigned long int>(101));
-//ft_check_value(map_m2.at(50), 4200);
+ft_check_value(map_m2.size(), static_cast<unsigned long int>(10000));
+ft_check_value(map_m2.at(50), 4200);
 typename MAP::iterator m2_it = map_m2.begin();
-for (int i = 0; i < 50; i++)
+
+for (int i = 0; i < 4; i++)
 	m2_it++;
+
 map_m2.erase(m2_it);
-ft_check_value(map_m2[50], 0);
+ft_check_value(map_m2[4], 0);
 MAP map_m3;
 map_m3[50] = 43;
 map_m3.swap(map_m2);
 ft_check_value(map_m2[50], 43);
-std::cout << map_m3.size() << std::endl;
 map_m3.erase(map_m3.begin(), map_m3.end());
-std::cout << map_m3.size() << std::endl;
 ft_check_value(map_m3.size(),static_cast<unsigned long int>(0));
 ft_check_value(map_m2[1],0);
-*/
+
+
 
 
 

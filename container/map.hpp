@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/11/27 01:34:26 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/11/27 02:19:39 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -458,12 +458,12 @@ class map
 				if (p->color == red)
 				{
 					p->color = black;
-					if (already_delete != 1 && n->color == double_black)
+					if (already_delete == 1 && n->color == double_black)
 					n->color = black;
 				}
 				else if (p != _root)
 				{
-					if (already_delete != 1  && n->color == double_black)
+					if (already_delete == 1  && n->color == double_black)
 						n->color = black;
 					p->color = double_black;
 					erase_rebalancing_tree(p, 1);
