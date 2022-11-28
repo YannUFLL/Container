@@ -13,8 +13,6 @@
 
 #define MAP ft::map<T1, T2>
 #define PAIR ft::pair<T1, T2>
-#define STR(a) #a
-#define STRING(a) STR(a) 
 
 template <typename T1, typename T2>
 void	ft_fulling_map(MAP &map)
@@ -183,35 +181,35 @@ catch(const std::exception& e)
 	ft_check_value(map_m4.size(),static_cast<unsigned long int>(0));
 
 //--------------------------------------------------------------------------------------//
-//                                      Observers                                       //
+//                                      Operations                                       //
 //--------------------------------------------------------------------------------------//
-ft_title("Observer : ");
-MAP map_ob;
-ft_check_value(map_ob.count(42), static_cast<unsigned long int>(0));
-map_ob[42] = 42;
-map_ob[42] = 43;
-map_ob[42] = 44;
-ft_check_value(map_ob.count(42), static_cast<unsigned long int>(1));
-map_ob[1] = 42;
-map_ob[2] = 42;
-map_ob[3] = 42;
-map_ob[4] = 42;
-map_ob[5] = 42;
-map_ob[8] = 42;
-typename MAP::iterator it_ob = map_ob.find(3);
+ft_title("Operations : ");
+MAP map_ope;
+ft_check_value(map_ope.count(42), static_cast<unsigned long int>(0));
+map_ope[42] = 42;
+map_ope[42] = 43;
+map_ope[42] = 44;
+ft_check_value(map_ope.count(42), static_cast<unsigned long int>(1));
+map_ope[1] = 42;
+map_ope[2] = 42;
+map_ope[3] = 42;
+map_ope[4] = 42;
+map_ope[5] = 42;
+map_ope[8] = 42;
+typename MAP::iterator it_ob = map_ope.find(3);
 it_ob++;
 ft_check_value(it_ob->first, 4);
-it_ob = map_ob.find(100000);
-ft_check_value(it_ob, map_ob.end());
-it_ob = map_ob.lower_bound(2);
+it_ob = map_ope.find(100000);
+ft_check_value(it_ob, map_ope.end());
+it_ob = map_ope.lower_bound(2);
 ft_check_value(it_ob->first, 2);
-it_ob = map_ob.lower_bound(6);
+it_ob = map_ope.lower_bound(6);
 ft_check_value(it_ob->first, 8);
-it_ob = map_ob.upper_bound(9);
-ft_check_value(it_ob, map_ob.end());
-it_ob = map_ob.upper_bound(5);
+it_ob = map_ope.upper_bound(9);
+ft_check_value(it_ob, map_ope.end());
+it_ob = map_ope.upper_bound(5);
 ft_check_value(it_ob->first, 8);
-std::pair<typename MAP::iterator, typename MAP::iterator> pair = map_ob.equal_range(5);
+std::pair<typename MAP::iterator, typename MAP::iterator> pair = map_ope.equal_range(5);
 ft_check_value(pair.first->first, 5);
 ft_check_value(pair.second->first, 8);
 

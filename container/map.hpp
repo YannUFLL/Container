@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/11/27 20:29:41 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/11/28 13:01:33 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 #include "../stl_rewrite/ft_pair.hpp"
 #include "../stl_rewrite/reverse_iterator.hpp"
+#include "../stl_rewrite/enable_if.hpp"
 #include "map_iterator.hpp"
 #include <cstring>
 #include <functional>
@@ -29,6 +30,7 @@ typename Allocator = std::allocator<ft::pair<const Key, T> > >
 class map
 {
 	struct node;
+	public :
 	typedef Key key_type;
 	typedef T   mapped_type; 
 	typedef ft::pair<const Key, T> value_type; 
@@ -41,8 +43,6 @@ class map
 	typedef const value_type& const_reference;
 	typedef typename std::allocator_traits<Allocator>::pointer pointer;
 	typedef typename std::allocator_traits<Allocator>::const_pointer const_pointer;
-
-	public :
 	typedef typename ft::map_iterator<T, node, const value_type> const_iterator;
 	typedef typename ft::map_iterator<T, node, value_type> iterator;
 	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -703,7 +703,7 @@ class map
 		return (element);
 	}
 	template<class InputIt>
-	void insert(InputIt first, InputIt last, typename std::enable_if<!std::is_integral<InputIt>::value>::type* = 0)
+	void insert(InputIt first, InputIt last, typename ft::enable_if<!std::is_integral<InputIt>::value>::type* = 0)
 	{
 		while (first != last)
 			insert(*first++);
@@ -743,7 +743,19 @@ class map
 		erase(this->begin(), this->end());
 	}
 //--------------------------------------------------------------------------------------//
-//                                      Observers                                       //
+//                                      Observer                                       //
+//--------------------------------------------------------------------------------------//
+key_compare key_comp() const
+{
+	return (_comp);
+}
+
+value_compare value_comp() const
+{ 
+	return value_compare(_comp);
+}
+//--------------------------------------------------------------------------------------//
+//                                      Operations                                      //
 //--------------------------------------------------------------------------------------//
 	size_type count (const key_type& k) const	
 	{
@@ -818,18 +830,7 @@ class map
 		pair.second = upper;
 		return (pair);
 	}
-//--------------------------------------------------------------------------------------//
-//                                      Operations                                      //
-//--------------------------------------------------------------------------------------//
-key_compare key_comp() const
-{
-	return (_comp);
-}
 
-value_compare value_comp() const
-{ 
-	return value_compare(_comp);
-}
 
 //--------------------------------------------------------------------------------------//
 //                                       Operator                                       //

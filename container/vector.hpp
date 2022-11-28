@@ -7,6 +7,7 @@
 #include "../stl_rewrite/iterator_trait.hpp"
 #include "../stl_rewrite/lexicographical_compare.hpp"
 #include "../stl_rewrite/reverse_iterator.hpp"
+#include "../stl_rewrite/enable_if.hpp"
 
 namespace ft{
 
@@ -29,8 +30,11 @@ class vector_base{
 	vector_base(const allocator_type &a ): _alloc(a), _v(NULL)  
 	{
 	}
-	vector_base(const allocator_type& a, size_type n): _alloc(a), _v(_alloc.allocate(n)) {
-
+	vector_base(const allocator_type& a, size_type n): _alloc(a) {
+		if (n != 0)
+			_v = _alloc.allocate(n); // warning trap. allocating with n = 0 still requests memory.
+		else
+			_v = NULL;
 		_space = _v + n; _last = _v + n;
 	}
 	~vector_base()
@@ -44,8 +48,9 @@ class vector_base{
 };
 
 template <typename T, typename Alloc = std::allocator<T> >
-class vector : public vector_base<T, Alloc>
+class vector : private vector_base<T, Alloc>
 {
+	public :
 	typedef T value_type;
 	typedef T* pointer;
 	typedef Alloc allocator_type;
@@ -53,8 +58,6 @@ class vector : public vector_base<T, Alloc>
 	typedef typename allocator_type::const_reference const_reference;
 	typedef typename allocator_type::const_pointer const_pointer;
 	typedef std::size_t size_type;
-
-	public :
 	template<bool> class vector_iterator;
 	template<bool> class vector_reverse_iterator;
 	typedef typename vector<T, Alloc>:: template vector_iterator<true> const_iterator;
@@ -151,7 +154,7 @@ class vector : public vector_base<T, Alloc>
 
 
 	template <typename InputIterator>
-	vector(InputIterator first, InputIterator last, const allocator_type & alloc = allocator_type(), typename std::enable_if<!std::is_integral<InputIterator>::value>::type* = 0): vector_base<T,Alloc>(alloc, 0)
+	vector(InputIterator first, InputIterator last, const allocator_type & alloc = allocator_type(), typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = 0): vector_base<T,Alloc>(alloc, 0)
 	{
 		size_type n = 0;
 		for (InputIterator ptr = first; ptr != last; ptr++)
@@ -180,6 +183,7 @@ class vector : public vector_base<T, Alloc>
 	}
 
 	~vector()	{destroy_element();this->~vector_base<T>();}	
+	
 	void destroy_element()
 	{
 		for (pointer p = this->_v; p != this->_space; p++)
@@ -455,7 +459,7 @@ bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 	typename vector<T, Alloc>::iterator start = lhs.begin();
 	typename vector<T, Alloc>::iterator end = lhs.end();
 	typename vector<T, Alloc>::iterator start_rhs = rhs.begin();
-	for (; start != end; start++)
+	for (; start != end;)
 	{
 		if (*start != *start_rhs)
 			return (false);
