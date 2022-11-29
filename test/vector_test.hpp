@@ -99,7 +99,7 @@ void	ft_compare_vector(VEC<T> vector, MVEC<T> my_vector, std::string name)
 }
 
 template<typename T>
-void	ft_info_vector(T &vector, std::string name)
+void	ft_info_vector(T const &vector, std::string name)
 {
 	std::cout <<"\e[0;34m" << name << "\e[0m"<< std::endl;
 	std::cout << std::setw(20) << std::left << "Size";
@@ -176,6 +176,8 @@ void	ft_vector_test()
 	MVEC<T> my_iterator_vector;	
 	ft_fill_vector(my_iterator_vector);
 	my_it = my_iterator_vector.begin();
+	std::cout << "it = v.begin() *it = 42 and it = v.end() *(--it) = 42 " << std::endl;
+	std::cout << "result : " << std::endl;
 	*my_it = 42;
 	my_it = my_iterator_vector.end();
 	*(--my_it) = 42;
@@ -184,13 +186,32 @@ void	ft_vector_test()
 	my_rit = my_iterator_vector.rbegin();
 	*(my_rit) = 84;
 	my_rit = my_iterator_vector.rend();
-	*(--my_rit) = 84;
+	*(--my_rit) = 18;
+	std::cout << "it = v.rbegin() *it = 84 and it = v.rend() *(--it) = 18 " << std::endl;
+	std::cout << "result : " << std::endl;
 	INFO(my_iterator_vector, "Reverse iterator : ");
+	my_it = my_iterator_vector.begin();
+	std::cout << "value *(1 + my_it) : " <<  *(1 + my_it) << std::endl; 
+	std::cout <<  "value iterator[10] must be equal to 10 : " << my_it[10] << std::endl;
+	std::cout <<  "value iterator[10] must be equal to 10 : " << my_it[10] << std::endl;
+	my_it = my_iterator_vector.end();
 	
 
-	typename MVEC<T>::const_iterator	my_cit = my_iterator_vector.cbegin();
+	typename MVEC<T>::const_iterator	my_cit = my_iterator_vector.end() ;
+	std::cout << "operator != with iterator and const iterator, must be 0 : " << (my_it != my_cit) << std::endl;
 	my_cit += 5;
 	INFO(my_iterator_vector, "iterator constant");
+
+	typename MVEC<T>::iterator my_it2(my_iterator_vector.begin() + 1);
+	std::cout << "Valeur d'un iterator commencant a begin + 1 : " << *my_it2 << std::endl;
+	typename MVEC<T>::reverse_iterator my_rit2(my_it2);
+	std::cout << "Valeur d'un reverse iterator initialise avec l'iterator precedent : " << *my_rit2 << std::endl;
+	std::cout << "valeur de my_rit2[2] : " << my_rit2[-2] << std::endl;
+	my_rit2 = my_iterator_vector.rbegin();
+	std::cout << "valeur de my_rit2 : " << *(my_rit2) << std::endl;
+	std::cout << "my_rit2 = rbegin(), valeur de my_rit2[2] " << my_rit2[10] << std::endl;
+	typename MVEC<T>::const_reverse_iterator my_rit3(my_iterator_vector.rbegin() + 3);
+	std::cout << "valeur de my_rit2 - my_rit3 : " << my_rit3 + my_rit2 << std::endl;
 	ft_wait();
 	
 
@@ -205,9 +226,14 @@ void	ft_vector_test()
 	my_resize.resize(50000);
 	print_data(my_resize.size(), "resize of an empty vector to 50000, size value : ");
 	print_data(my_resize.capacity(), "capacity : ");
-	print_data(my_resize.empty(), "is empyt : ");
-	
-	my_resize.reserve(100000);
+	print_data(my_resize.empty(), "value bool empty (should not be empty) : ");
+	my_resize.clear();
+	my_resize.shrink_to_fit();
+	my_resize.push_back(42);	
+	my_resize.push_back(43);	
+	my_resize.push_back(44);	
+	my_resize.reserve(100);
+	INFO(my_resize, "vector 42;43;44 after reserve of 100 elements : "); 
 	print_data(my_resize.capacity(), "new capacity after reserve for a capacity of 100000 : ");
 
 	my_resize.shrink_to_fit();
@@ -238,6 +264,10 @@ void	ft_vector_test()
 
 
 	std::cout << std::endl << std::endl << std::endl << "\e[0;33mStarting test... PHASE 5, 'Modifier' :\e[0m" << std::endl ;
+	VEC<T> vec_m;
+	vec_m.push_back(1001);
+	vec_m.push_back(1002);
+	vec_m.push_back(1003);
 	INFO(my_range_constructor, "Element of the vector before test 'modifier' : "); 
 	int b[] = {42,43,44};
 	my_range_constructor.assign(&b[0], &b[2]);
@@ -247,15 +277,28 @@ void	ft_vector_test()
 	my_range_constructor.pop_back(); 
 	INFO(my_range_constructor, "After pob back : "); 
 	my_range_constructor.insert(my_range_constructor.begin(), 118); 
-	INFO(my_range_constructor, "After insert of 118 in position 1 : "); 
+	INFO(my_range_constructor, "After insert of 118 in position 0 : "); 
 	my_range_constructor.erase(my_range_constructor.begin()); 
-	INFO(my_range_constructor, "After erase of 118 in position 1 : "); 
+	INFO(my_range_constructor, "After erase of 118 in position 0 : "); 
+	my_range_constructor.insert(my_range_constructor.begin() + 1, 4, 44); 
+	INFO(my_range_constructor, "After insert of val 44 four time at the middle: "); 
+	my_range_constructor.shrink_to_fit();
+	my_range_constructor.insert(my_range_constructor.begin() + 1,10, 88); 
+	INFO(my_range_constructor, "After shrint to fit and insert fill val 88 ten times, in position 1 : "); 
+	my_range_constructor.insert(my_range_constructor.begin() + 1, vec_m.begin(), vec_m.end()); 
+	INFO(my_range_constructor, "insert with iterator of vector 1001,1002,1003  in position 1 : "); 
+	my_range_constructor.erase(my_range_constructor.begin() + 1, my_range_constructor.begin() + 4); 
+	INFO(my_range_constructor, "After erase of 1001,1002,1003  in position 1 : "); 
+	my_range_constructor.insert(my_range_constructor.begin() + 1, vec_m.begin(), vec_m.end()); 
+	INFO(my_range_constructor, "insert with iterator of vector 1001,1002,1003  in position 1 with no reallocation because enought capacity : "); 
 	VEC<T> swap;
 	ft_fill_vector(swap);
 	my_range_constructor.swap(swap); 
 	INFO(my_range_constructor, "After swap with other vector : "); 
 	my_range_constructor.clear();
 	INFO(my_range_constructor, "After clear : "); 
+	std::cout << "insert 1 element in position 1, return value must be 4200 : " <<  *(my_range_constructor.insert(my_range_constructor.begin() + 1, 4200)) << std::endl; 
+
 	ft_wait();
 	
 //--------------------------------------------------------------------------------------//

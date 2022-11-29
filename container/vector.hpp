@@ -58,6 +58,7 @@ class vector : private vector_base<T, Alloc>
 	typedef typename allocator_type::const_reference const_reference;
 	typedef typename allocator_type::const_pointer const_pointer;
 	typedef std::size_t size_type;
+	typedef std::ptrdiff_t difference_type;
 	template<bool> class vector_iterator;
 	template<bool> class vector_reverse_iterator;
 	typedef typename vector<T, Alloc>:: template vector_iterator<true> const_iterator;
@@ -80,10 +81,8 @@ class vector : private vector_base<T, Alloc>
 			typedef typename choose_type<CONST, const_iterator, iterator>::type	conversion;
 
 		
-			template <bool B>
-			vector_iterator(const vector_iterator<B> &src):
+			vector_iterator(const vector_iterator<false> &src):
 				_ptr(src.base()) {}
-				
 
 			pointer		base() const { return _ptr; }
 
@@ -95,21 +94,44 @@ class vector : private vector_base<T, Alloc>
 			iterator operator++(int) {iterator temp = *this; ++(*this); return(temp);} 
 			iterator& operator--() {_ptr--; return(*this);} 
 			iterator operator--(int) {iterator temp = *this; --(*this); return(temp);} 
-			iterator& operator+=(value_type n){this->_ptr += n;return(*this);}
-			iterator& operator-=(value_type n){this->_ptr -= n;return(*this);}
-			iterator friend operator+(iterator a, size_type n) {iterator it(a._ptr); it += n ; return (it);}
-			iterator friend operator-(iterator a, size_type n) {iterator it(a._ptr); it -= n ; return (it);}
-			friend size_type operator-(const iterator &a, const iterator &b) 
+			iterator& operator+=(size_type n){this->_ptr += n;return(*this);}
+			iterator& operator-=(size_type n){this->_ptr -= n;return(*this);}
+			iterator operator+(size_type n) {iterator it(_ptr); it += n ; return (it);}
+			iterator operator-(size_type n) {iterator it(_ptr); it -= n ; return (it);}
+			reference operator[](size_type n) {return (*(_ptr + n));}
+			vector_iterator& operator=(const vector_iterator &assign)
+			{
+				if (this != &assign)
+					_ptr = assign._ptr;
+				return (*this);
+			}
+			friend difference_type operator+(const iterator &a, const iterator &b) 
+			{
+				return (a._ptr + b._ptr);
+			}
+			friend iterator operator+(const size_type n, const iterator &b) 
+			{
+				iterator it(b._ptr); 
+				it += n ;
+				return (it);
+			}
+			friend difference_type operator-(const iterator &a, const iterator &b) 
 			{
 				return (a._ptr - b._ptr);
 			}
-			bool operator==(const iterator &a) const 	
+			friend iterator operator-(const size_type n, const iterator &b) 
 			{
-				return (a._ptr == this->_ptr);
+				iterator it(b._ptr); 
+				it -= n ;
+				return (it);
 			}
-			bool operator!=(const iterator &a) const 	
+			bool operator==(const const_iterator &a) const 	
 			{
-				return (a._ptr != this->_ptr);
+				return (a.base() == this->_ptr);
+			}
+			bool operator!=(const const_iterator &a) const 	
+			{
+				return (a.base() != this->_ptr);
 			}
 			bool friend operator>(iterator const &a, iterator const &b) 
 			{
@@ -136,14 +158,14 @@ class vector : private vector_base<T, Alloc>
 		private : 
 			pointer _ptr;
 	};
-	iterator begin() const {return(iterator(this->_v)); }
-	iterator end() const {return(iterator(this->_space));} // return a invalid memorty address, is just to determin when the boundary was reach
-	const_iterator cbegin() const {return(const_iterator(this->_v)); }
-	const_iterator cend() const {return(const_iterator(this->_space));} // return a invalid memorty address, is just to determin when the boundary was reach
-	reverse_iterator rbegin() const {return(reverse_iterator(this->_space)); }
-	reverse_iterator rend() const {return(reverse_iterator(this->_v));} // return a invalid memorty address, is just to determin when the boundary was reach
-	const_reverse_iterator crbegin() const {return(const_reverse_iterator(this->_space)); }
-	const_reverse_iterator crend() const {return(const_reverse_iterator(this->_v));} // return a invalid memorty address, is just to determin when the boundary was reach
+	iterator begin() {return(iterator(this->_v)); }
+	iterator end() {return(iterator(this->_space));} // return a invalid memorty address, is just to determin when the boundary was reach
+	const_iterator begin() const {return(const_iterator(this->_v)); }
+	const_iterator end() const {return(const_iterator(this->_space));} // return a invalid memorty address, is just to determin when the boundary was reach
+	reverse_iterator rbegin() {return(reverse_iterator(this->_space)); }
+	reverse_iterator rend() {return(reverse_iterator(this->_v));} // return a invalid memorty address, is just to determin when the boundary was reach
+	const_reverse_iterator rbegin() const {return(const_reverse_iterator(this->_space)); }
+	const_reverse_iterator rend() const {return(const_reverse_iterator(this->_v));} // return a invalid memorty address, is just to determin when the boundary was reach
 
 	explicit vector(const allocator_type& alloc = allocator_type()): vector_base<T,Alloc>(alloc, 0) {}
 
@@ -168,7 +190,7 @@ class vector : private vector_base<T, Alloc>
 
 	vector(const vector& x): vector_base<T,Alloc>(x._alloc, x.size()) 
 	{
-		iterator it = x.begin();
+		const_iterator it = x.begin();
 		uninitialized_copy(this->begin(), this->end(), it, this->_alloc);
 	}
 
@@ -190,10 +212,11 @@ class vector : private vector_base<T, Alloc>
 		{
 			this->_alloc.destroy(p);
 		}
+		this->_space = this->_v;
 	}
 	/* CAPACITY */
 	size_type size() const {return size_type(end() - begin());}
-	size_type maxsize() const {return (static_cast<size_type>(std::numeric_limits<size_type>::max()));}
+	size_type max_size() const {return (static_cast<size_type>(std::numeric_limits<size_type>::max()));}
 	size_type capacity() const {return (this->_last - this->_v);}
 	void	resize(size_type n, value_type val = value_type())
 	{
@@ -201,7 +224,7 @@ class vector : private vector_base<T, Alloc>
 	}
 	void	reserve(size_type n) 
 	{
-		if (n > this->maxsize())
+		if (n > this->max_size())
 			throw (std::length_error("vector::reserve"));
 		if (n > this->capacity())
 		{
@@ -212,7 +235,7 @@ class vector : private vector_base<T, Alloc>
 	{
 		reallocate(this->size());
 	}
-	bool empty() {return(this->_v == this->_space - 1);}
+	bool empty() const {return(this->_v == this->_space - 1);}
 	private : 
 
 	void	reallocate(size_type n)
@@ -266,7 +289,7 @@ class vector : private vector_base<T, Alloc>
 	const value_type* data() const  {return (this->_v);}
 	/* MODIFIER */
 	template <class InputIterator> 
-	void assign(InputIterator first, InputIterator last)
+	void assign(InputIterator first, InputIterator last, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = 0)
 	{
 		size_type n = 0;	
 		for (InputIterator ptr = first; ptr != last; ptr++)
@@ -346,40 +369,40 @@ class vector : private vector_base<T, Alloc>
 			pointer ptr = this->_alloc.allocate(n + nbr_elements);
 			uninitialized_copy(ptr,  ptr + pos, this->_v, this->_alloc);
 			uninitialized_fill(ptr + pos, ptr + pos + n, val, this->_alloc);
-			uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, this->_v, this->_alloc);
+			uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, position, this->_alloc);
 			this->~vector();
 			this->_v = ptr; 
 			this->_space = ptr + n + nbr_elements; 
 			this->_last = ptr + n + nbr_elements; 
 		}
 		else 
-		{
-			pointer ptr = this->_v; 
-			iterator test(ptr);
-			ptr += this->size() + n ;
-			reverse_iterator it(ptr);
-			reverse_iterator v(this->rbegin());
-			nbr_elements = this->size();
-			pos = return_pos(position);
-			uninitialized_copy_and_destroy(it,  it + (1), v, this->_alloc);
-			uninitialized_fill(it + (nbr_elements - pos + 1), it + (nbr_elements - pos + 1) + n, val, this->_alloc);
-			this->_space = ptr; 
+		{ 
+			reverse_iterator start(this->end() + n); 
+			reverse_iterator end(position); 
+			reverse_iterator value(this->rbegin()); 
+			uninitialized_copy_and_destroy(start, end, value, this->_alloc);
+			end = end - n;
+			uninitialized_fill(end, end + n, val, this->_alloc);
+			this->_space = this->_space + n;
 		}
 	}
 
 	iterator insert(iterator position, const value_type& val)
 	{
+		size_type pos;
+		pos = return_pos(position); 
 		insert(position, 1, val);
-		return(position++);
+		iterator new_pos(this->begin() + pos);
+		return(new_pos);
 	}
 	template <class InputIterator>
-	void insert(iterator position, InputIterator first, InputIterator last,typename std::enable_if<!std::is_integral<InputIterator>::value>::type* = 0)
+	void insert(iterator position, InputIterator first, InputIterator last,typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = 0)
 	{
 		size_type pos; 
 		size_type nbr_elements;
 		size_type n = 0;
 		for (InputIterator ptr = first; ptr != last; ptr++)
-			n++;
+			++n;
 		if (this->size() + n > this->capacity())
 		{
 			nbr_elements = this->size();
@@ -387,7 +410,7 @@ class vector : private vector_base<T, Alloc>
 			pointer ptr = this->_alloc.allocate(n + nbr_elements);
 			uninitialized_copy(ptr,  ptr + pos, this->_v, this->_alloc);
 			uninitialized_copy(ptr + pos, ptr + pos + n, first, this->_alloc);
-			uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, this->_v, this->_alloc);
+			uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, position, this->_alloc);
 			this->~vector();
 			this->_v = ptr; 
 			this->_space = ptr + n + nbr_elements; 
@@ -420,7 +443,7 @@ class vector : private vector_base<T, Alloc>
 		{
 			uninitialized_copy_and_destroy(first, (this->end() - n), last, this->_alloc);
 			this->_space = this->_space - n;
-			return (last);
+			return (first);
 		}
 		this->_space = this->_space - n;
 		return (this->end());
@@ -430,11 +453,11 @@ class vector : private vector_base<T, Alloc>
 		if (position == this->end())
 			return (this->end());
 		this->_alloc.destroy(&*position);
-		iterator copy(&*position);
+		iterator copy(&*(position + 1));
 		if (*&position != this->_last)
 			uninitialized_copy_and_destroy(position, this->end() - 1, copy, this->_alloc);
 		this->_space = this->_space - 1;
-		return (position + 1);
+		return (position);
 	}
 	void clear()
 	{
@@ -456,9 +479,9 @@ bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
 	if (lhs.size() != rhs.size())
 		return (false);
-	typename vector<T, Alloc>::iterator start = lhs.begin();
-	typename vector<T, Alloc>::iterator end = lhs.end();
-	typename vector<T, Alloc>::iterator start_rhs = rhs.begin();
+	typename vector<T, Alloc>::const_iterator start = lhs.begin();
+	typename vector<T, Alloc>::const_iterator end = lhs.end();
+	typename vector<T, Alloc>::const_iterator start_rhs = rhs.begin();
 	for (; start != end;)
 	{
 		if (*start != *start_rhs)

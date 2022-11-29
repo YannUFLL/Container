@@ -11,8 +11,8 @@
 #include <map>
 #include "../test/vector_test.hpp"
 
-#define MAP ft::map<T1, T2>
-#define PAIR ft::pair<T1, T2>
+#define MAP std::map<T1, T2>
+#define PAIR std::pair<T1, T2>
 
 template <typename T1, typename T2>
 void	ft_fulling_map(MAP &map)
@@ -87,6 +87,7 @@ void	ft_map_test()
 	ft_check_value(start3 != end3, true);
 	start3++;
 	ft_check_value(start3 != end3, false);
+
 	
 //--------------------------------------------------------------------------------------//
 //                                       Capacity                                       //
