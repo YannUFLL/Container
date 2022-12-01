@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 09:20:53 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/11/29 22:43:19 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/01 12:22:42 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,36 +84,34 @@ template<class Iterator1, class Iterator2>
 template<class Iterator1, class Iterator2>
 	bool operator<(const ft::reverse_iterator<Iterator1> &lhs, const ft::reverse_iterator<Iterator2> &rhs)
 	{
-		return (lhs.base() < rhs.base());
+		return (rhs.base() < lhs.base());
 	}
 template<class Iterator1, class Iterator2>
 	bool operator<=(const ft::reverse_iterator<Iterator1> &lhs,const ft::reverse_iterator<Iterator2> &rhs)
 	{
-		return (lhs.base() <= rhs.base());
+		return (rhs.base() <= lhs.base());
 	}
 template<class Iterator1, class Iterator2>
 	bool operator>(const ft::reverse_iterator<Iterator1> &lhs,const ft::reverse_iterator<Iterator2> &rhs)
 	{
-		return (lhs.base() > rhs.base());
+		return (rhs.base() > lhs.base());
 	}
 template<class Iterator1, class Iterator2>
 	bool operator>=(const ft::reverse_iterator<Iterator1> &lhs,const ft::reverse_iterator<Iterator2> &rhs)
 	{
-		return (lhs.base() >= rhs.base());
+		return (rhs.base() >= lhs.base());
 	}
 template<class Iterator1, class Iterator2>
-	bool operator-(const ft::reverse_iterator<Iterator1> &lhs, const ft::reverse_iterator<Iterator2> &rhs)
+	typename reverse_iterator<Iterator1>::difference_type operator-(const ft::reverse_iterator<Iterator1> &lhs, const ft::reverse_iterator<Iterator2> &rhs)
 	{
-		return (lhs.base() + rhs.base());
+		return (rhs.base() - lhs.base());
 	}
 	template<class Iterator1, class Iterator2>
-	bool operator+(const ft::reverse_iterator<Iterator1> &lhs,const ft::reverse_iterator<Iterator2> &rhs)
+	typename reverse_iterator<Iterator1>::difference_type operator+(const ft::reverse_iterator<Iterator1> &lhs,const ft::reverse_iterator<Iterator2> &rhs)
 	{
-		// Iterator 1 = const_iterator 
-		// Iterator 2 = Iterator
 		Iterator1 a = lhs.base();
-		Iterator2 b = rhs.base(); // pourquoi dans cette situation y'a t'il une conversion de type 
-		return (a - b);
+		Iterator2 b = rhs.base(); 
+		return (b + a);
 	}
 		template<class Iter>
 	reverse_iterator<Iter> operator+(typename reverse_iterator<Iter>::difference_type n, const ft::reverse_iterator<Iter> &it)

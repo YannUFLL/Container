@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/11/28 13:49:51 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/01 12:29:11 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ class map
 	typedef const value_type& const_reference;
 	typedef typename std::allocator_traits<Allocator>::pointer pointer;
 	typedef typename std::allocator_traits<Allocator>::const_pointer const_pointer;
-	typedef typename ft::map_iterator<T, node, const value_type> const_iterator;
-	typedef typename ft::map_iterator<T, node, value_type> iterator;
+	typedef typename ft::map_iterator<T, node, const value_type, value_type> const_iterator;
+	typedef typename ft::map_iterator<T, node, value_type, value_type> iterator;
 	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 	typedef typename ft::reverse_iterator<iterator> reverse_iterator;
 
@@ -64,8 +64,8 @@ class map
 		{
 			protected:
 				key_compare _comp;
-				value_compare(key_compare c): _comp(c) {}	
 			public : 
+				value_compare(key_compare c): _comp(c) {}	
 				bool operator()(const value_type& lhs, const value_type& rhs)
 				{
 					return (_comp(lhs.first, rhs.first));
@@ -80,16 +80,18 @@ class map
 
 		template<class InputIt>
 		map(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator& alloc = Allocator()):
-		_alloc_node(node_allocator()), _alloc_pair(alloc), _comp(comp)
+		_root(NULL), _alloc_node(node_allocator()), _alloc_pair(alloc), _comp(comp)
 		{
 			for(;first != last; first++)
 				insert(*first);
 		}
 
-		map(const map& other, const Allocator &alloc): 
-		_alloc_node(node_allocator()), _alloc_pair(alloc), _comp(other._comp)
+		map(const map& other): _root(NULL), _alloc_node(other._alloc_node), _alloc_pair(other._alloc_pair), _comp(other._comp)
 		{
-
+			map::const_iterator first = other.begin();	
+			map::const_iterator last = other.end();	
+			for(;first != last; first++)
+				insert(*first);
 		}
 
 		~map()
@@ -534,7 +536,7 @@ class map
 //                                      Iterators                                       //
 //--------------------------------------------------------------------------------------//
 
-	iterator begin() const 
+	iterator begin() 
 	{
 		node *beg;
 		beg = _root;
@@ -550,7 +552,7 @@ class map
 		iterator begin(beg);
 		return (begin);
 	}
-	iterator end() const
+	iterator end()
 	{
 		node *beg;
 		beg = _root;
@@ -566,17 +568,17 @@ class map
 		iterator it(beg, 1);
 		return (it);
 	}
-	reverse_iterator rbegin() const
+	reverse_iterator rbegin()
 	{
 		reverse_iterator it(this->end());
 		return (it);
 	}
-		reverse_iterator rend() const 
+		reverse_iterator rend() 
 	{
 		reverse_iterator it(this->begin());	
 		return (it);
 	}
-	const_iterator cbegin() const 
+	const_iterator begin() const 
 	{
 		node *beg;
 		beg = _root;
@@ -592,7 +594,7 @@ class map
 		const_iterator begin(beg);
 		return (begin);
 	}
-	const_iterator cend() const
+	const_iterator end() const
 	{
 		node *beg;
 		beg = _root;
@@ -608,12 +610,12 @@ class map
 		const_iterator it(beg, 1);
 		return (it);
 	}
-	const_reverse_iterator crbegin() const
+	const_reverse_iterator rbegin() const
 	{
 		const_reverse_iterator it(this->cend());
 		return (it);
 	}
-	const_reverse_iterator crend() const 
+	const_reverse_iterator rend() const 
 	{
 		const_reverse_iterator it(this->cbegin());
 		return (it);
@@ -628,8 +630,8 @@ class map
 	bool empty() const {return (!_root);}
 	size_type size() const 
 	{
-		iterator start = this->begin();
-		iterator end = this->end();
+		const_iterator start = this->begin();
+		const_iterator end = this->end();
 		int i = 0;
 		for (;start != end; start++, i++);
 		return (i);
@@ -672,7 +674,7 @@ class map
 //                                       Modifier                                       //
 //--------------------------------------------------------------------------------------//
 
-	ft::pair<iterator, bool> insert(const ft::pair<const int, int> &value) 
+	ft::pair<iterator, bool> insert(const ft::pair<const Key, mapped_type> &value) 
 	{
 		node *element = search_element(value.first);
 		if (element == NULL)
@@ -740,6 +742,10 @@ class map
 
 	void clear()
 	{
+		if (_root == NULL)
+			std::cout << "root is null" << std::endl;
+		std::cout << " begin == end : " << (this->begin() == this->end()) << std::endl;
+			
 		erase(this->begin(), this->end());
 	}
 //--------------------------------------------------------------------------------------//
@@ -821,11 +827,21 @@ value_compare value_comp() const
 		return (it);
 	}
 	
-	std::pair<iterator, iterator> equal_range(const Key& key)
+	ft::pair<const_iterator,const_iterator> equal_range(const Key& key) const
+	{
+		const_iterator lower = lower_bound(key);
+		const_iterator upper = upper_bound(key);
+		ft::pair<const_iterator, const_iterator> pair;
+		pair.first = lower;
+		pair.second = upper;
+		return (pair);
+	}
+
+		ft::pair<iterator,iterator> equal_range(const Key& key)
 	{
 		iterator lower = lower_bound(key);
 		iterator upper = upper_bound(key);
-		std::pair<iterator, iterator> pair;
+		ft::pair<iterator, iterator> pair;
 		pair.first = lower;
 		pair.second = upper;
 		return (pair);
@@ -845,9 +861,9 @@ bool operator==(const ft::map<Key,T,Compare,Alloc>& lhs,
 		return (false);
 	else
 	{
-		typename ft::map<Key,T,Compare,Alloc>::iterator it = lhs.begin();
-		typename ft::map<Key,T,Compare,Alloc>::iterator ite = lhs.end();
-		typename ft::map<Key,T,Compare,Alloc>::iterator it2 = rhs.begin();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it = lhs.begin();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator ite = lhs.end();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it2 = rhs.begin();
 		while (it != ite)
 		{
 			if (it->first != it2->first || it->second != it2->second)
@@ -869,10 +885,10 @@ template<class Key, class T, class Compare, class Alloc>
 bool operator<(const ft::map<Key,T,Compare,Alloc>& lhs,
 							 const ft::map<Key,T,Compare,Alloc>& rhs)
 {
-		typename ft::map<Key,T,Compare,Alloc>::iterator it = lhs.begin();
-		typename ft::map<Key,T,Compare,Alloc>::iterator ite = lhs.end();
-		typename ft::map<Key,T,Compare,Alloc>::iterator it2 = rhs.begin();
-		typename ft::map<Key,T,Compare,Alloc>::iterator it2e = rhs.end();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it = lhs.begin();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator ite = lhs.end();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it2 = rhs.begin();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator it2e = rhs.end();
 	while (it != ite)
 	{
 		if (it2 == it2e)

@@ -82,7 +82,9 @@ class vector : private vector_base<T, Alloc>
 
 		
 			vector_iterator(const vector_iterator<false> &src):
-				_ptr(src.base()) {}
+				_ptr(src.base()) {
+
+				}
 
 			pointer		base() const { return _ptr; }
 
@@ -216,7 +218,7 @@ class vector : private vector_base<T, Alloc>
 	}
 	/* CAPACITY */
 	size_type size() const {return size_type(end() - begin());}
-	size_type max_size() const {return (static_cast<size_type>(std::numeric_limits<size_type>::max()));}
+	size_type max_size() const {return (std::min((size_type) std::numeric_limits<difference_type>::max(), this->_alloc.max_size()));}
 	size_type capacity() const {return (this->_last - this->_v);}
 	void	resize(size_type n, value_type val = value_type())
 	{
@@ -235,7 +237,7 @@ class vector : private vector_base<T, Alloc>
 	{
 		reallocate(this->size());
 	}
-	bool empty() const {return(this->_v == this->_space - 1);}
+	bool empty() const {return(this->_v == this->_space);}
 	private : 
 
 	void	reallocate(size_type n)
@@ -509,7 +511,7 @@ bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 template <class T, class Alloc>
 bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs)
 {
-	return (rhs > lhs);
+	return (rhs < lhs);
 }
 
 template <class T, class Alloc>

@@ -211,7 +211,7 @@ void	ft_vector_test()
 	std::cout << "valeur de my_rit2 : " << *(my_rit2) << std::endl;
 	std::cout << "my_rit2 = rbegin(), valeur de my_rit2[2] " << my_rit2[10] << std::endl;
 	typename MVEC<T>::const_reverse_iterator my_rit3(my_iterator_vector.rbegin() + 3);
-	std::cout << "valeur de my_rit2 - my_rit3 : " << my_rit3 + my_rit2 << std::endl;
+	std::cout << "valeur de my_rit2 - my_rit3 : " << my_rit3 - my_rit2 << std::endl;
 	ft_wait();
 	
 

@@ -10,9 +10,11 @@
 #include "../container/map.hpp"
 #include <map>
 #include "../test/vector_test.hpp"
+#include <list>
+#include <string>
 
-#define MAP std::map<T1, T2>
-#define PAIR std::pair<T1, T2>
+#define MAP ft::map<T1, T2>
+#define PAIR ft::pair<T1, T2>
 
 template <typename T1, typename T2>
 void	ft_fulling_map(MAP &map)
@@ -35,13 +37,32 @@ void	ft_title(std::string title)
 template <typename T1, typename T2>
 void	ft_map_test()	
 {
+	
+//--------------------------------------------------------------------------------------//
+//                                     Constructor                                      //
+//--------------------------------------------------------------------------------------//
+	//Constructeur de copy avec une list en entree 
+	std::cout << std::endl << "\e[0;31m		Starting map test \e[0m" << std::endl;
+	usleep(2000000);
+	ft_title("Constructor : ");
+/*
+	std::list<ft::pair<const int, int> > lst;
+	unsigned int lst_size = 10;
+	for (unsigned int i = 0; i < lst_size; ++i)
+		lst.push_back(ft::pair<const int, int>(i, (lst_size - i)));
+	ft::map<T1, T2> mp(lst.begin(), lst.end());
+	ft_check_value(mp.size(), static_cast<unsigned long int>(10));
+	ft_check_value(mp[2],8 );
+	ft::map<T1, T2> mp2;
+	ft_check_value(mp2.size(), static_cast<unsigned long int>(0));
+
+	ft::map<T1, T2> mp3(mp);
+	ft_check_value(mp3[2],8 );*/
 //--------------------------------------------------------------------------------------//
 //                                       Iterator                                       //
 //--------------------------------------------------------------------------------------//
 
 
-	std::cout << std::endl << "\e[0;31m		Starting map test \e[0m" << std::endl;
-	usleep(2000000);
 	ft_title("Iterator : ");
 	MAP iterator;
 	typename MAP::iterator start = iterator.begin();
@@ -81,14 +102,18 @@ void	ft_map_test()
 	rstart2--;
 	rstart2++;
 	ft_check_value(rstart2 != rend2,false);
-
-	typename MAP::const_iterator start3 = iterator2.cbegin();
-	typename MAP::const_iterator end3 = iterator2.cend();
+/*
+	typename MAP::const_iterator start3 = iterator2.begin();
+	typename MAP::const_iterator end3 = iterator2.end();
 	ft_check_value(start3 != end3, true);
 	start3++;
-	ft_check_value(start3 != end3, false);
+	ft_check_value(start3 != end3, false);*/
 
-	
+	iterator.clear();
+	start = iterator.begin();
+	end = iterator.end();
+	ft_check_value((start == end), true);
+
 //--------------------------------------------------------------------------------------//
 //                                       Capacity                                       //
 //--------------------------------------------------------------------------------------//
@@ -180,6 +205,8 @@ catch(const std::exception& e)
 	ft_check_value(1,1);
 }
 	ft_check_value(map_m4.size(),static_cast<unsigned long int>(0));
+	map_m4.clear();
+	map_m4.clear();
 
 //--------------------------------------------------------------------------------------//
 //                                      Operations                                       //
@@ -207,12 +234,12 @@ ft_check_value(it_ob->first, 2);
 it_ob = map_ope.lower_bound(6);
 ft_check_value(it_ob->first, 8);
 it_ob = map_ope.upper_bound(9);
-ft_check_value(it_ob, map_ope.end());
+ft_check_value(it_ob, (--map_ope.end()));
 it_ob = map_ope.upper_bound(5);
 ft_check_value(it_ob->first, 8);
-std::pair<typename MAP::iterator, typename MAP::iterator> pair = map_ope.equal_range(5);
+/*std::pair<typename MAP::iterator, typename MAP::iterator> pair = map_ope.equal_range(5);
 ft_check_value(pair.first->first, 5);
-ft_check_value(pair.second->first, 8);
+ft_check_value(pair.second->first, 8);*/
 
 
 //--------------------------------------------------------------------------------------//
@@ -246,9 +273,11 @@ ft_check_value(map_op <= map_op2, true);
 ft_check_value(map_op >= map_op2, true);
 ft_check_value(map_op < map_op2, false);
 ft_check_value(map_op > map_op2, false);
-map_op.clear();
-map_op2.clear();
 ft_check_value(map_op == map_op2, true);
+map_op.clear();
+map_op = map_op2;
+map_op2.clear();
+ft_check_value(map_op == map_op2, false);
 
 
 //--------------------------------------------------------------------------------------//
@@ -284,7 +313,6 @@ ft_check_value(map_op == map_op2, true);
 	map_s1.clear();
 	chrono.end();
 	chrono.print_time(STRING(time clear map random PERF_VALUE elements : ));
-
 
 }
 

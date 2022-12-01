@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 11:42:30 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/11/28 13:02:03 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/01 12:20:56 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,15 @@ void	ft_vector_test();
 
 int main()
 {
+	
 	for (int i = 0; i < 100; i++)
 		std::cout << std::endl;
-	ft_vector_test<int>();
+	//ft_vector_test<int>();
 	std::cout << "Please press any key to start map test... " << std::endl;
 	system("read");
 	for (int i = 0; i < 100; i++)
 		std::cout << std::endl;
+		
 	ft_map_test<int, int>();
 	std::cout << "Please press any key to start stack test... " << std::endl;
 	system("read");
