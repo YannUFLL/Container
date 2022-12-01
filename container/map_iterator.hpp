@@ -3,7 +3,7 @@
 	
 	namespace ft 
 	{
-	template <typename T, typename Node, typename Content, typename NotConstContent>
+	template <typename T, typename Node, typename Content, typename NotConstContent, typename color_t>
 	class map_iterator {
 		public :
 			typedef	std::bidirectional_iterator_tag iterator_category;
@@ -13,43 +13,57 @@
 			typedef std::ptrdiff_t difference_type;
 			typedef Content* pointer;
 			typedef Content& reference;
-
-			pointer		base() const { }
-
-			map_iterator(): _n(&_dummy), _last(NULL), _dummy()
-			{}
-			map_iterator(map_iterator const &copy): _last(copy._last)
+		private : 
+			Node *_n;
+			Node _dummy;
+		public :
+			map_iterator(): _n(&_dummy), _dummy()
 			{
-				if (copy._n == &copy._dummy)
-						_n = &_dummy;
-					else
-						_n = copy._n;
+				_dummy.color = static_cast<color_t>(3);
 			}
-			map_iterator(Node* ptr):_n(ptr), _last(NULL), _dummy()
+			map_iterator(map_iterator const &copy): _dummy()
 			{
-			}
-			map_iterator(Node* ptr, bool end):_n(ptr), _dummy()
-			{
-				if (end == true)
+				_dummy.color = static_cast<color_t>(3);
+				if (copy.base()->color == static_cast<color_t>(3))
 				{
-					_last = _n;
+					_dummy = *(copy.base());
 					_n = &_dummy;
 				}
 			}
+			map_iterator(Node* ptr):_n(ptr), _dummy()
+			{
+				_dummy.color = static_cast<color_t>(3);
+				if (ptr == NULL)
+				{
+					_n = &_dummy;
+				}
+			}
+			map_iterator(Node* ptr, bool end):_n(ptr), _dummy()
+			{
+				_dummy.color = static_cast<color_t>(3) ;
+				if (end == true)
+				{
+					_dummy.left = _n;
+					_n = &_dummy;
+				}
+			}
+			Node*		base() const {return(_n); }
 			reference operator*() const {return (_n->content);}
 			pointer operator->() const {return (&(_n->content));}
 			map_iterator& operator++() 
 			{
 				Node *child = NULL;
-				if (_n != &_dummy)
-					_last = _n;
-				if (_n == &_dummy && _last != NULL)
+				if (_n != &_dummy) //si on est a la fin  
+					_dummy.left = _n;
+				if (_n == &_dummy)
 				{
-					_n = _last;
+					if (_dummy.left != NULL)
+						_n = _dummy.left;
 					return(*this);
 				}
 				if (_n->parent == NULL && _n->right == NULL)
 				{
+					_dummy.left = _n;
 					_n = &_dummy;
 					return (*this);
 				}
@@ -82,14 +96,16 @@
 			{
 				Node *child = NULL;
 				if (_n != &_dummy) //si on est a la fin  
-					_last = _n;
-				if (_n == &_dummy && _last != NULL) // Si on est sur le noeud de cassos mais qu on change de cote on revient en arriere
+					_dummy.left = _n;
+				if (_n == &_dummy) // Si on est sur le noeud de cassos mais qu on change de cote on revient en arriere
 				{
-					_n = _last;
+					if (_dummy.left != NULL)
+						_n = _dummy.left;
 					return(*this);
 				}
 				if (_n->parent == NULL && _n->left == NULL) 
 				{
+					_dummy.left = _n;
 					_n = &_dummy;
 					return (*this);
 				}
@@ -143,11 +159,12 @@
 			{
 				if (this != &assign)
 				{
-					if (assign._n == &assign._dummy)
+					_dummy.color = static_cast<color_t>(3);
+					if (assign.base()->color == static_cast<color_t>(3))
+					{
+						_dummy = *(assign.base());
 						_n = &_dummy;
-					else
-						_n = assign._n;
-					_last = assign._last;
+					}
 				}
 				return *this; 
 			}
@@ -164,10 +181,6 @@
 				return (_n == other._n);
 			}
 
-		private : 
-			Node *_n;
-			Node *_last;
-			Node _dummy;
 
 	};
 //--------------------------------------------------------------------------------------//

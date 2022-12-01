@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/01 12:29:11 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/01 22:21:56 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,13 @@
 
 
 namespace ft {
+
 template <typename Key, typename T, typename Compare = std::less<Key>,
 typename Allocator = std::allocator<ft::pair<const Key, T> > >
 class map
 {
 	struct node;
+	enum color_t {red, black, double_black, dum};
 	public :
 	typedef Key key_type;
 	typedef T   mapped_type; 
@@ -43,15 +45,15 @@ class map
 	typedef const value_type& const_reference;
 	typedef typename std::allocator_traits<Allocator>::pointer pointer;
 	typedef typename std::allocator_traits<Allocator>::const_pointer const_pointer;
-	typedef typename ft::map_iterator<T, node, const value_type, value_type> const_iterator;
-	typedef typename ft::map_iterator<T, node, value_type, value_type> iterator;
+	typedef typename ft::map_iterator<T, node, const value_type, value_type, color_t> const_iterator;
+	typedef typename ft::map_iterator<T, node, value_type, value_type, color_t> iterator;
 	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 	typedef typename ft::reverse_iterator<iterator> reverse_iterator;
 
 	private : 
-	enum color_t {red, black, double_black};
 	struct node 
 	{
+		node& operator=(node& other) {left = other.left; right = other.right; parent = other.parent; color = other.color; return(*this);}
 		node(): left(), right(), parent(), color(red), content() {}
 		struct node *left;
 		struct node *right;
@@ -742,10 +744,6 @@ class map
 
 	void clear()
 	{
-		if (_root == NULL)
-			std::cout << "root is null" << std::endl;
-		std::cout << " begin == end : " << (this->begin() == this->end()) << std::endl;
-			
 		erase(this->begin(), this->end());
 	}
 //--------------------------------------------------------------------------------------//
