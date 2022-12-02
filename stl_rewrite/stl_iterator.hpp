@@ -1,21 +1,87 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   reverse_iterator.hpp                               :+:      :+:    :+:   */
+/*   stl_iterator.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 09:20:53 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/01 12:22:42 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/02 20:44:38 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef REVERSE_ITERATOR_HPP
-#define REVERSE_ITERATOR_HPP
+#ifndef STL_ITERATOR_HPP
+#define STL_ITERATOR_HPP
 
 #include "iterator_trait.hpp"
 
 namespace ft {
+	template<class It>
+class Wrapper_it
+{
+protected : 
+	It current;
+	typedef iterator_trait<It> traits_type;
+public : 
+	typedef typename traits_type::pointer pointer;
+	typedef typename traits_type::difference_type difference_type;
+	typedef typename traits_type::reference reference;
+	typedef typename traits_type::iterator_category iterator_category;
+	typedef typename traits_type::value_type value_type;
+	typedef std::size_t size_type;
+	Wrapper_it():current(It()) {};
+	Wrapper_it(It itr) : current(itr) {}
+	template<class U>
+	Wrapper_it(const Wrapper_it<U>& other): current(other.base()) {}
+
+	reference operator*() const
+	{
+		return *(current);
+	}
+	pointer operator->() const
+	{
+		return (&(operator*()));
+	}
+	Wrapper_it& operator++() {++current; return *this;}
+	Wrapper_it operator++(int) {Wrapper_it tmp = *this; ++(*this); return tmp;}
+
+	Wrapper_it& operator--() {--current; return *this;}
+	Wrapper_it operator--(int) {Wrapper_it tmp = *this; --(*this); return tmp;}
+	reference operator[](size_type n) {return (current[n]);}
+
+	Wrapper_it operator+(difference_type n)
+	{
+		Wrapper_it rt(current + n);
+		return (rt);
+	}
+	Wrapper_it operator-(difference_type n)
+	{
+		Wrapper_it rt(current - n);
+		return (rt);
+	}
+	Wrapper_it &operator+=(difference_type n)
+	{
+		current += n;
+		return (*this);
+	}
+	Wrapper_it &operator-=(difference_type n)
+	{
+		current -= n;
+		return (*this);
+	}
+	It base() const {return current;}
+};
+template<class Iterator1, class Iterator2>
+	bool operator==(const ft::Wrapper_it<Iterator1> &lhs, const ft::Wrapper_it<Iterator2> &rhs)
+	{
+		return (lhs.base() == rhs.base());
+	}
+template<class Iterator1, class Iterator2>
+	bool operator!=(const ft::Wrapper_it<Iterator1> &lhs, const ft::Wrapper_it<Iterator2> &rhs)
+	{
+		return (lhs.base() != rhs.base());
+	}
+
 template<class It>
 class reverse_iterator
 {
@@ -67,7 +133,6 @@ public :
 		current += n;
 		return (*this);
 	}
-
 	It base() const {return current;}
 
 };

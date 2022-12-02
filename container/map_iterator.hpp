@@ -3,67 +3,59 @@
 	
 	namespace ft 
 	{
-	template <typename T, typename Node, typename Content, typename NotConstContent, typename color_t>
+		template <typename T, typename Node, typename Content>
 	class map_iterator {
 		public :
 			typedef	std::bidirectional_iterator_tag iterator_category;
-			typedef Content value_type;
-			typedef T mapped_type;
+			typedef T value_type;
 			typedef std::size_t size_type;
 			typedef std::ptrdiff_t difference_type;
 			typedef Content* pointer;
 			typedef Content& reference;
-		private : 
-			Node *_n;
-			Node _dummy;
-		public :
-			map_iterator(): _n(&_dummy), _dummy()
-			{
-				_dummy.color = static_cast<color_t>(3);
+
+			pointer		base() const { }
+
+			map_iterator(): _n(&_dummy), _last(NULL), _dummy(), _same_add(), _same_sub(), _init(){
 			}
-			map_iterator(map_iterator const &copy): _dummy()
+			template<typename CONST>
+			map_iterator(map_iterator<T, Node, CONST>const &copy): _last(copy._last), _same_add(copy._same_add), _same_sub(copy._same_sub), _init(copy._init)
 			{
-				_dummy.color = static_cast<color_t>(3);
-				if (copy.base()->color == static_cast<color_t>(3))
-				{
-					_dummy = *(copy.base());
-					_n = &_dummy;
-				}
+				if (copy._n == &copy._dummy)
+						_n = &_dummy;
+					else
+						_n = copy._n;
 			}
-			map_iterator(Node* ptr):_n(ptr), _dummy()
+			map_iterator(Node* ptr):_n(ptr), _last(NULL), _dummy(), _same_add(), _same_sub(), _init()
 			{
-				_dummy.color = static_cast<color_t>(3);
-				if (ptr == NULL)
-				{
-					_n = &_dummy;
-				}
 			}
-			map_iterator(Node* ptr, bool end):_n(ptr), _dummy()
+			map_iterator(Node* ptr, bool end):_n(ptr), _dummy(), _same_add(), _same_sub(), _init()
 			{
-				_dummy.color = static_cast<color_t>(3) ;
 				if (end == true)
 				{
-					_dummy.left = _n;
+					_last = _n;
 					_n = &_dummy;
 				}
 			}
-			Node*		base() const {return(_n); }
 			reference operator*() const {return (_n->content);}
-			pointer operator->() const {return (&(_n->content));}
+			pointer operator->() {return (&(_n->content));}
 			map_iterator& operator++() 
 			{
+				if (_init == 0)
+					_init = 1;
+				else if (_same_sub == 1)
+					_same_sub = 0;
+				else 
+					_same_add = 1;
 				Node *child = NULL;
-				if (_n != &_dummy) //si on est a la fin  
-					_dummy.left = _n;
-				if (_n == &_dummy)
+				if (_n != &_dummy)
+					_last = _n;
+				if (_n == &_dummy && _last != NULL && _same_add == 0)
 				{
-					if (_dummy.left != NULL)
-						_n = _dummy.left;
+					_n = _last;
 					return(*this);
 				}
 				if (_n->parent == NULL && _n->right == NULL)
 				{
-					_dummy.left = _n;
 					_n = &_dummy;
 					return (*this);
 				}
@@ -94,18 +86,22 @@
 			map_iterator operator++(int) {map_iterator temp = *this; ++(*this); return(temp);} 
 			map_iterator& operator--() 
 			{
+				if (_init == 0)
+					_init = 1;
+				else if (_same_add == 1)
+					_same_add = 0;
+				else 
+					_same_sub = 1;
 				Node *child = NULL;
 				if (_n != &_dummy) //si on est a la fin  
-					_dummy.left = _n;
-				if (_n == &_dummy) // Si on est sur le noeud de cassos mais qu on change de cote on revient en arriere
+					_last = _n;
+				if (_n == &_dummy && _last != NULL && _same_sub == 0) // Si on est sur le noeud de cassos mais qu on change de cote on revient en arriere
 				{
-					if (_dummy.left != NULL)
-						_n = _dummy.left;
+					_n = _last;
 					return(*this);
 				}
-				if (_n->parent == NULL && _n->left == NULL) 
+				if (_n->parent == NULL && _n->left == NULL) //Si pas de parent et pas a gauche fin de chaine 
 				{
-					_dummy.left = _n;
 					_n = &_dummy;
 					return (*this);
 				}
@@ -159,30 +155,40 @@
 			{
 				if (this != &assign)
 				{
-					_dummy.color = static_cast<color_t>(3);
-					if (assign.base()->color == static_cast<color_t>(3))
-					{
-						_dummy = *(assign.base());
+					if (assign._n == &assign._dummy)
 						_n = &_dummy;
-					}
+					else
+						_n = assign._n;
+					_last = assign._last;
+					_same_add = assign._same_add;
+					_same_sub = assign._same_sub;
+					_init = assign._init;
 				}
 				return *this; 
 			}
-			bool operator!=(map_iterator& other)
+			template<typename T1, typename T2>
+			bool friend operator!=(map_iterator <T, Node,T1>& lhs, map_iterator <T, Node,T2>& rhs)
 			{
-				if (_n == &_dummy && other._n == &other._dummy)
+				if (lhs._n == &lhs._dummy && rhs._n == &rhs._dummy)
 					return (false);
-				return (_n != other._n);
+				return (lhs._n != rhs._n);
 			}
+
 			bool operator==(map_iterator& other)
 			{
 				if (_n == &_dummy && other._n == &other._dummy)
 					return (true);
 				return (_n == other._n);
 			}
-
-
+		public : 
+			Node *_n;
+			Node *_last;
+			Node _dummy;
+			bool _same_add;
+			bool _same_sub;
+			bool _init;
 	};
+	
 //--------------------------------------------------------------------------------------//
 //                                   Reverse iterator                                   //
 //--------------------------------------------------------------------------------------//

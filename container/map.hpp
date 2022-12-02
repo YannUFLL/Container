@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/01 22:21:56 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/02 21:02:01 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #define MAP_HPP
 
 #include "../stl_rewrite/ft_pair.hpp"
-#include "../stl_rewrite/reverse_iterator.hpp"
+#include "../stl_rewrite/stl_iterator.hpp"
 #include "../stl_rewrite/enable_if.hpp"
 #include "map_iterator.hpp"
 #include <cstring>
@@ -45,8 +45,8 @@ class map
 	typedef const value_type& const_reference;
 	typedef typename std::allocator_traits<Allocator>::pointer pointer;
 	typedef typename std::allocator_traits<Allocator>::const_pointer const_pointer;
-	typedef typename ft::map_iterator<T, node, const value_type, value_type, color_t> const_iterator;
-	typedef typename ft::map_iterator<T, node, value_type, value_type, color_t> iterator;
+	typedef typename ft::Wrapper_it<ft::map_iterator<T, node, const value_type> > const_iterator;
+	typedef typename ft::Wrapper_it<ft::map_iterator<T, node, value_type> > iterator;
 	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 	typedef typename ft::reverse_iterator<iterator> reverse_iterator;
 
@@ -216,21 +216,21 @@ class map
 			n->parent = root;
 			n->color = red;
 		}
-		void insert_from_position(node *position, node *n)
+		void insert_from_position(node *position, value_type const &n)
 		{
 			bool superior = 0;
-			if (_comp(n->content.first, position->content.first))
+			if (_comp(n.first, position->content.first))
 				superior = 1;
 			if (superior == 1)
 			{
-				while (_comp(n->content.first, position->content.first) && position != _root)
+				while (_comp(n.first, position->content.first) && position != _root)
 				{
 					position = position->parent;
 				}
 			}
 			else 
 			{
-				while (!_comp(n->content.first, position->content.first) && position != _root)
+				while (!_comp(n.first, position->content.first) && position != _root)
 				{
 					position = position->parent;
 				}
@@ -567,7 +567,7 @@ class map
 		{
 			beg = beg->right;
 		}
-		iterator it(beg, 1);
+		typename ft::map_iterator<T, node,value_type> it(beg, 1);
 		return (it);
 	}
 	reverse_iterator rbegin()
@@ -609,7 +609,7 @@ class map
 		{
 			beg = beg->right;
 		}
-		const_iterator it(beg, 1);
+		typename ft::map_iterator<T, node, const value_type> it(beg, 1);
 		return (it);
 	}
 	const_reverse_iterator rbegin() const
@@ -702,7 +702,7 @@ class map
 		{
 			element = new_node(value);
 			iterator it(element); 
-			insert_from_positon(pos, value);
+			insert_from_position(element, value);
 		}
 		return (element);
 	}
