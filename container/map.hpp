@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/02 21:02:01 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/02 22:58:41 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -697,14 +697,8 @@ class map
 	}
 	iterator insert(iterator pos, const value_type& value) 
 	{
-		node *element = search_element(value.first);
-		if (element == NULL)
-		{
-			element = new_node(value);
-			iterator it(element); 
-			insert_from_position(element, value);
-		}
-		return (element);
+		(void)pos;
+		return(insert(value)->first);
 	}
 	template<class InputIt>
 	void insert(InputIt first, InputIt last, typename ft::enable_if<!std::is_integral<InputIt>::value>::type* = 0)
