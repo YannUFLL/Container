@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/04 19:07:55 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/04 23:40:20 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -754,6 +754,7 @@ value_compare value_comp() const
 		if (!element)
 		{
 			iterator tmp(this->end());
+			std::cout << "COUCOU" << std::endl;
 			return (tmp);
 		}
 		else

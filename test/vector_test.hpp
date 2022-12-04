@@ -267,6 +267,7 @@ void	ft_vector_test()
 	vec_m.push_back(1001);
 	vec_m.push_back(1002);
 	vec_m.push_back(1003);
+
 	INFO(my_range_constructor, "Element of the vector before test 'modifier' : "); 
 	int b[] = {42,43,44};
 	my_range_constructor.assign(&b[0], &b[2]);

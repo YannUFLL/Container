@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   vector.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/12/04 23:34:10 by ydumaine          #+#    #+#             */
+/*   Updated: 2022/12/04 23:34:18 by ydumaine         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
@@ -206,9 +218,9 @@ class vector : private vector_base<T, Alloc>
 		return (*this);
 	}
 
-	~vector()	{destroy_element();this->~vector_base<T>();}	
+	~vector()	{destroy_all_elements();this->~vector_base<T>();}	
 	
-	void destroy_element()
+	void destroy_all_elements()
 	{
 		for (pointer p = this->_v; p != this->_space; p++)
 		{
@@ -307,7 +319,7 @@ class vector : private vector_base<T, Alloc>
 		}
 		else 
 		{
-			this->destroy_element();
+			this->destroy_all_elements();
 			uninitialized_copy(this->_v, this->_v + n, first, this->_alloc);
 			this->_space = this->_v + n;
 		}
@@ -325,7 +337,7 @@ class vector : private vector_base<T, Alloc>
 		}
 		else 
 		{
-			this->destroy_element();
+			this->destroy_all_elements();
 			uninitialized_fill(this->_v, this->_v + n, val, this->_alloc);
 			this->_space = this->_v + n;
 		}
@@ -360,6 +372,11 @@ class vector : private vector_base<T, Alloc>
 	{
 
 	}*/
+	void destroy_element(pointer start, pointer end)
+	{
+		for(;start != end; ++start)
+			this->_alloc.destroy(start);
+	}
 	void insert (iterator position, size_type n, const value_type& val)  
 	{
 		size_type pos; 
@@ -368,14 +385,45 @@ class vector : private vector_base<T, Alloc>
 		{
 			nbr_elements = this->size();
 			pos = return_pos(position);
+			size_type size_allocate = 0;
+			if ((n + nbr_elements) < (nbr_elements * 2))
+				size_allocate = nbr_elements * 2;
+			else
+				size_allocate = nbr_elements + n;
 			pointer ptr = this->_alloc.allocate(n + nbr_elements);
-			uninitialized_copy(ptr,  ptr + pos, this->_v, this->_alloc);
-			uninitialized_fill(ptr + pos, ptr + pos + n, val, this->_alloc);
-			uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, position, this->_alloc);
+			try 
+			{
+				uninitialized_copy(ptr,  ptr + pos, this->_v, this->_alloc);
+			}
+			catch (...)
+			{
+				this->_alloc.deallocate(ptr, size_allocate);
+				throw;
+			}
+			try 
+			{
+				uninitialized_fill(ptr + pos, ptr + pos + n, val, this->_alloc);
+			}
+			catch (...)
+			{
+				destroy_element(ptr, (ptr + pos));
+				this->_alloc.deallocate(ptr, size_allocate);
+				throw;
+			}
+			try 
+			{
+				uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, position, this->_alloc);
+			}
+			catch (...)
+			{
+				destroy_element(ptr, ptr + (pos + n));
+				this->_alloc.deallocate(ptr, size_allocate);
+				throw;
+			}
 			this->~vector();
 			this->_v = ptr; 
 			this->_space = ptr + n + nbr_elements; 
-			this->_last = ptr + n + nbr_elements; 
+			this->_last = ptr + size_allocate; 
 		}
 		else 
 		{ 
@@ -409,14 +457,45 @@ class vector : private vector_base<T, Alloc>
 		{
 			nbr_elements = this->size();
 			pos = return_pos(position);
+			size_type size_allocate = 0;
+			if ((n + nbr_elements) < (nbr_elements * 2))
+				size_allocate = nbr_elements * 2;
+			else
+				size_allocate = nbr_elements + n;
 			pointer ptr = this->_alloc.allocate(n + nbr_elements);
-			uninitialized_copy(ptr,  ptr + pos, this->_v, this->_alloc);
-			uninitialized_copy(ptr + pos, ptr + pos + n, first, this->_alloc);
-			uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, position, this->_alloc);
+			try 
+			{
+				uninitialized_copy(ptr,  ptr + pos, this->_v, this->_alloc);
+			}
+			catch (...)
+			{
+				this->_alloc.deallocate(ptr, size_allocate);
+				throw;
+			}
+			try
+			{
+				uninitialized_copy(ptr + pos, ptr + pos + n, first, this->_alloc);
+			}
+			catch (...)
+			{
+				destroy_element(ptr, ptr + pos);
+				this->_alloc.deallocate(ptr, size_allocate);
+				throw;
+			}
+			try 
+			{
+				uninitialized_copy(ptr + pos + n,  ptr + n + nbr_elements, position, this->_alloc);
+			}
+			catch (...)
+			{
+				destroy_element(ptr, ptr + (pos + n));
+				this->_alloc.deallocate(ptr, size_allocate);
+				throw;
+			}
 			this->~vector();
 			this->_v = ptr; 
 			this->_space = ptr + n + nbr_elements; 
-			this->_last = ptr + n + nbr_elements; 
+			this->_last = ptr + size_allocate; 
 		}
 		else 
 		{
@@ -428,7 +507,7 @@ class vector : private vector_base<T, Alloc>
 			nbr_elements = this->size();
 			pos = return_pos(position);
 			uninitialized_copy_and_destroy(it,  it + (nbr_elements - pos + 1), v, this->_alloc);
-			uninitialized_copy(it + (nbr_elements - pos + 1), it + (nbr_elements - pos + 1) + n, first, this->_alloc);
+			uninitialized_copy(position, position + n, first, this->_alloc);
 			this->_space = ptr; 
 		}
 	}
@@ -463,7 +542,7 @@ class vector : private vector_base<T, Alloc>
 	}
 	void clear()
 	{
-		this->destroy_element();
+		this->destroy_all_elements();
 	}
 	void swap(vector &other)
 	{
