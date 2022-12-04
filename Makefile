@@ -11,16 +11,14 @@ RM = rm -f
 
 DEBEUG = -g
 
-CFLAGS = -Werror -Wextra -Wall -std=c++98 
-#-g -fsanitize=thread
+CFLAGS = -Werror -Wextra -Wall -std=c++98 -g3
 
 objs/%.o: */%.cpp
 	${CC} -o $@ -c $< ${CFLAGS} ${DEBEUG}
 
 
 ${NAME}:	${OBJS}
-			${LINK} ${NAME} ${OBJS} 
-#-g -fsanitize=thread
+			${LINK} ${NAME} ${OBJS} -fsanitize=thread
 
 all:		${NAME}
 

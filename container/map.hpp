@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/02 22:58:41 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/04 19:07:55 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,15 @@
 #ifndef MAP_HPP
 #define MAP_HPP
 
-#include "../stl_rewrite/ft_pair.hpp"
-#include "../stl_rewrite/stl_iterator.hpp"
-#include "../stl_rewrite/enable_if.hpp"
+#include <iterator>
 #include "map_iterator.hpp"
 #include <cstring>
 #include <functional>
 #include <memory>
 #include <initializer_list>
+#include "../stl_rewrite/ft_pair.hpp"
+#include "../stl_rewrite/stl_iterator.hpp"
+#include "../stl_rewrite/enable_if.hpp"
 
 
 namespace ft {
@@ -31,7 +32,7 @@ typename Allocator = std::allocator<ft::pair<const Key, T> > >
 class map
 {
 	struct node;
-	enum color_t {red, black, double_black, dum};
+	enum color_t {red, black, double_black};
 	public :
 	typedef Key key_type;
 	typedef T   mapped_type; 
@@ -40,7 +41,7 @@ class map
 	typedef std::ptrdiff_t difference_type;
 	typedef Compare key_compare;
 	typedef Allocator allocator_type;
-	typedef std::allocator<node> node_allocator;
+	typedef typename Allocator:: template rebind<node>::other node_allocator;
 	typedef value_type& reference;
 	typedef const value_type& const_reference;
 	typedef typename std::allocator_traits<Allocator>::pointer pointer;
@@ -60,6 +61,7 @@ class map
 		struct node *parent; 
 		color_t color;
 		value_type  content;
+		~node() {}
 	};
 	public :
 		class value_compare
@@ -216,28 +218,6 @@ class map
 			n->parent = root;
 			n->color = red;
 		}
-		void insert_from_position(node *position, value_type const &n)
-		{
-			bool superior = 0;
-			if (_comp(n.first, position->content.first))
-				superior = 1;
-			if (superior == 1)
-			{
-				while (_comp(n.first, position->content.first) && position != _root)
-				{
-					position = position->parent;
-				}
-			}
-			else 
-			{
-				while (!_comp(n.first, position->content.first) && position != _root)
-				{
-					position = position->parent;
-				}
-			}
-			recursive_insert(position, n);
-		}
-
 		void insert_case1(node *n)
 		{
 			if (parent(n) == NULL)
@@ -498,13 +478,21 @@ class map
 	node* new_node(value_type content = value_type())
 	{
 		node *ptr = _alloc_node.allocate(1);
-		_alloc_node.construct(ptr);
-		_alloc_pair.construct(&ptr->content, content);
+			_alloc_node.construct(ptr);
+		try
+		{
+			_alloc_pair.construct(&ptr->content, content);
+		}
+		catch (...)
+		{
+			_alloc_node.deallocate(ptr, 1);
+			throw;
+		}
 		return (ptr);
 	}
 	void	delete_node(node *n)
 	{
-		_alloc_pair.destroy(&n->content);
+		//_alloc_pair.destroy(&n->content);
 		_alloc_node.destroy(n);
 		_alloc_node.deallocate(n, 1);
 	}
@@ -698,10 +686,10 @@ class map
 	iterator insert(iterator pos, const value_type& value) 
 	{
 		(void)pos;
-		return(insert(value)->first);
+		return(insert(value).first);
 	}
 	template<class InputIt>
-	void insert(InputIt first, InputIt last, typename ft::enable_if<!std::is_integral<InputIt>::value>::type* = 0)
+	void insert(InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type* = 0)
 	{
 		while (first != last)
 			insert(*first++);
@@ -807,7 +795,8 @@ value_compare value_comp() const
 		iterator it = this->begin();
 		while (_comp(it->first, key) && it != this->end())
 			++it;
-		++it;
+		if (it->first == key)
+			++it;
 		return (it);
 	}
 	const_iterator upper_bound(const Key& key) const
@@ -815,7 +804,8 @@ value_compare value_comp() const
 		const_iterator it = this->begin();
 		while (_comp(it->first, key) && it != this->end())
 			++it;
-		++it;
+		if (it->first == key)
+			++it;
 		return (it);
 	}
 	

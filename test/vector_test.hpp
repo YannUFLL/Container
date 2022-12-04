@@ -1,25 +1,25 @@
 #ifndef VECTOR_TEST
 #define VECTOR_TEST
 
+#include "test.hpp"
 #include <vector>
 #include "../container/vector.hpp"
 #include <iostream>
 #include <string>
-#include <iomanip>
 #include <unistd.h>
 #include <typeinfo>
+#include <iomanip>
 #include "MyChrono.hpp"
 
-#define VEC ft::vector
-#define	MVEC ft::vector
+
 #define COMPARE_VECTORS(vector, my_vector) ft_compare_vector(vector, my_vector, #vector)
 #define INFO(vector, msg) ft_info_vector(vector, msg)
-#define PERF_VALUE 10000
+#define PERF_VALUE 1000000 // ONE MILLION
 
 /*
-NE MARCHE PAS je sais pas pourquoi
+DIDN'T WORK I DON'T KNOW WHY 
 #define STRING(a) #a
-CELUI DU DESSOUS MARCHE BIEN
+THE ONE BELLOW WORK FINE
 */
 
 #define STR(a) #a
@@ -108,7 +108,7 @@ void	ft_info_vector(T const &vector, std::string name)
 	std::cout << vector.capacity() << std::endl;
 	std::cout << std::setw(20) << std::left << "Content : ";
 	if (vector.begin() == vector.end())
-	std::cout << "empty " << std::endl;
+		std::cout << "empty " << std::endl;
 	for (typename T::const_iterator it_vec = vector.begin(); it_vec != vector.end(); it_vec++)
 	{
 		std::cout << *it_vec << ";"; 
@@ -177,7 +177,7 @@ void	ft_vector_test()
 	ft_fill_vector(my_iterator_vector);
 	my_it = my_iterator_vector.begin();
 	std::cout << "it = v.begin() *it = 42 and it = v.end() *(--it) = 42 " << std::endl;
-	std::cout << "result : " << std::endl;
+	std::cout << "Result : " << std::endl;
 	*my_it = 42;
 	my_it = my_iterator_vector.end();
 	*(--my_it) = 42;
@@ -188,30 +188,30 @@ void	ft_vector_test()
 	my_rit = my_iterator_vector.rend();
 	*(--my_rit) = 18;
 	std::cout << "it = v.rbegin() *it = 84 and it = v.rend() *(--it) = 18 " << std::endl;
-	std::cout << "result : " << std::endl;
+	std::cout << "Result : " << std::endl;
 	INFO(my_iterator_vector, "Reverse iterator : ");
 	my_it = my_iterator_vector.begin();
-	std::cout << "value *(1 + my_it) : " <<  *(1 + my_it) << std::endl; 
-	std::cout <<  "value iterator[10] must be equal to 10 : " << my_it[10] << std::endl;
-	std::cout <<  "value iterator[10] must be equal to 10 : " << my_it[10] << std::endl;
+	std::cout << "Value *(1 + my_it) : " <<  *(1 + my_it) << std::endl; 
+	std::cout <<  "Value iterator[10] must be equal to 10 : " << my_it[10] << std::endl;
+	std::cout <<  "Value iterator[10] must be equal to 10 : " << my_it[10] << std::endl;
 	my_it = my_iterator_vector.end();
 	
 
 	typename MVEC<T>::const_iterator	my_cit = my_iterator_vector.end() ;
-	std::cout << "operator != with iterator and const iterator, must be 0 : " << (my_it != my_cit) << std::endl;
+	std::cout << "Operator != with iterator and const iterator, must be 0 : " << (my_it != my_cit) << std::endl;
 	my_cit += 5;
 	INFO(my_iterator_vector, "iterator constant");
 
 	typename MVEC<T>::iterator my_it2(my_iterator_vector.begin() + 1);
-	std::cout << "Valeur d'un iterator commencant a begin + 1 : " << *my_it2 << std::endl;
+	std::cout << "Dereferenced Value of an iterator begin + 1 : " << *my_it2 << std::endl;
 	typename MVEC<T>::reverse_iterator my_rit2(my_it2);
-	std::cout << "Valeur d'un reverse iterator initialise avec l'iterator precedent : " << *my_rit2 << std::endl;
-	std::cout << "valeur de my_rit2[2] : " << my_rit2[-2] << std::endl;
+	std::cout << "Dereferenced value of a reverse iterator set with the previous iterator : " << *my_rit2 << std::endl;
+	std::cout << "Value of my_rit2[2] : " << my_rit2[-2] << std::endl;
 	my_rit2 = my_iterator_vector.rbegin();
-	std::cout << "valeur de my_rit2 : " << *(my_rit2) << std::endl;
-	std::cout << "my_rit2 = rbegin(), valeur de my_rit2[2] " << my_rit2[10] << std::endl;
+	std::cout << "Value of my_rit2 : " << *(my_rit2) << std::endl;
+	std::cout << "my_rit2 = rbegin(), value of my_rit2[2] " << my_rit2[10] << std::endl;
 	typename MVEC<T>::const_reverse_iterator my_rit3(my_iterator_vector.rbegin() + 3);
-	std::cout << "valeur de my_rit2 - my_rit3 : " << my_rit3 - my_rit2 << std::endl;
+	std::cout << "Value of my_rit2 - my_rit3 : " << my_rit3 - my_rit2 << std::endl;
 	ft_wait();
 	
 
@@ -239,7 +239,6 @@ void	ft_vector_test()
 	my_resize.shrink_to_fit();
 	print_data(my_resize.capacity(), "new capacity after reserve for a shrink to fit: ");
 
-	std::cout << std::endl << std::endl << std::endl;
 	ft_wait();
 	
 //--------------------------------------------------------------------------------------//
@@ -297,7 +296,7 @@ void	ft_vector_test()
 	INFO(my_range_constructor, "After swap with other vector : "); 
 	my_range_constructor.clear();
 	INFO(my_range_constructor, "After clear : "); 
-	std::cout << "insert 1 element in position 1, return value must be 4200 : " <<  *(my_range_constructor.insert(my_range_constructor.begin() + 1, 4200)) << std::endl; 
+	std::cout << "insert 1 element in position 0, return value must be 4200 : " <<  *(my_range_constructor.insert(my_range_constructor.begin(), 4200)) << std::endl; 
 
 	ft_wait();
 	
@@ -342,39 +341,39 @@ void	ft_vector_test()
 	for (int i = 0; i < PERF_VALUE; i++)
 		vector.push_back(i);
 	chrono.end();
-	chrono.print_time(STRING(Temps de remplissage pour PERF_VALUE  : ));
+	chrono.print_time(STRING(Time for push_back PERF_VALUE elements in a empty vector : ));
 
 	chrono.begin();
 	VEC<T> vector2(PERF_VALUE, 42);
 	chrono.end();
-	chrono.print_time(STRING(Temps de construction pour PERF_VALUE  : ));
+	chrono.print_time(STRING(Filling time using fill constructor for PERF_VALUE  : ));
 
 	chrono.begin();
 	VEC<T> vector3(vector2.begin(), vector2.end());
 	chrono.end();
-	chrono.print_time(STRING(Temps de construction pour via iterateur de vecteur pour  PERF_VALUE  : ));
+	chrono.print_time(STRING(Constructing time by iterator for PERF_VALUE elements  : ));
 
 	typename VEC<T>::iterator middle = vector2.begin() + (vector2.size() / 2);
 	chrono.begin();
 	vector2.insert(middle, vector.begin(), vector.end());
 	chrono.end();
-	chrono.print_time(STRING(Temps de remplissage par insertion au milieu d un vecteur : ));
+	chrono.print_time(STRING(Filling time by insering a vector of PERF_VALUE elements in the middle of a vector of PERF_VALUE elements : ));
 
 	chrono.begin();
 	vector2.resize(PERF_VALUE * 10 );
 	chrono.end();
-	chrono.print_time(STRING(Temps de traitement d un resize de (PERF_VALUE  * 10)  : ));
+	chrono.print_time(STRING(Time for a resize of (PERF_VALUE  * 10)  : ));
 	middle = vector3.begin() + (vector3.size() / 2);
 
 	chrono.begin();
 	vector3.erase(middle);
 	chrono.end();
-	chrono.print_time("Temps de suppresionn d'un element au milieu : ");
+	chrono.print_time("Time for suppress a element in the middle of the vector :");
 
 	chrono.begin();
 	vector2.clear();
 	chrono.end();
-	chrono.print_time(STRING(Temps de traitement d un clear sur un vecteur de  (PERF_VALUE * 10) :  ));
+	chrono.print_time(STRING(Time for a clear of (PERF_VALUE * 10) elements : ));
 	
 }
 

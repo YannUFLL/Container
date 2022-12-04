@@ -1,6 +1,7 @@
 #ifndef MAP_TEST
 #define MAP_TEST
 
+#include "test.hpp"
 #include <chrono> 
 #include <unistd.h>
 #include <stdlib.h>
@@ -13,8 +14,6 @@
 #include <list>
 #include <string>
 
-#define MAP ft::map<T1, T2>
-#define PAIR ft::pair<T1, T2>
 
 template <typename T1, typename T2>
 void	ft_fulling_map(MAP &map)
@@ -34,18 +33,21 @@ void	ft_title(std::string title)
 	std::cout << std::endl << std::endl << title << std::endl;
 }
 
+	ft::map<int,std::string > mp;
 template <typename T1, typename T2>
 void	ft_map_test()	
 {
+
+
+	
 	
 //--------------------------------------------------------------------------------------//
 //                                     Constructor                                      //
 //--------------------------------------------------------------------------------------//
-	//Constructeur de copy avec une list en entree 
 	std::cout << std::endl << "\e[0;31m		Starting map test \e[0m" << std::endl;
 	usleep(2000000);
-	ft_title("Constructor : ");
-/*
+	ft_title("\e[0;33mConstructor : ");
+
 	std::list<ft::pair<const int, int> > lst;
 	unsigned int lst_size = 10;
 	for (unsigned int i = 0; i < lst_size; ++i)
@@ -57,13 +59,13 @@ void	ft_map_test()
 	ft_check_value(mp2.size(), static_cast<unsigned long int>(0));
 
 	ft::map<T1, T2> mp3(mp);
-	ft_check_value(mp3[2],8 );*/
+	ft_check_value(mp3[2],8 );
 //--------------------------------------------------------------------------------------//
 //                                       Iterator                                       //
 //--------------------------------------------------------------------------------------//
 
 
-	ft_title("Iterator : ");
+	ft_title("\e[0;33mIterator : \e[0m");
 	MAP iterator;
 	typename MAP::iterator start = iterator.begin();
 	typename MAP::iterator end = iterator.end();
@@ -73,7 +75,7 @@ void	ft_map_test()
 	typename MAP::iterator end2 = iterator.end();
 	ft_check_value(start2 == end2, false);
 	for (int i = 0; i < 1000; i++)
-		start2++;
+		++start2;
 	end2--;
 	ft_check_value(start2 == end2, true);
 	ft_check_value(start2->second, iterator[1000]);
@@ -102,12 +104,12 @@ void	ft_map_test()
 	rstart2--;
 	rstart2++;
 	ft_check_value(rstart2 != rend2,false);
-/*
+
 	typename MAP::const_iterator start3 = iterator2.begin();
 	typename MAP::const_iterator end3 = iterator2.end();
 	ft_check_value(start3 != end3, true);
 	start3++;
-	ft_check_value(start3 != end3, false);*/
+	ft_check_value(start3 != end3, false);
 
 	iterator.clear();
 	start = iterator.begin();
@@ -118,7 +120,7 @@ void	ft_map_test()
 //                                       Capacity                                       //
 //--------------------------------------------------------------------------------------//
 
-	ft_title("Capacity : ");
+	ft_title("\e[0;33mCapacity : ");
 	MAP size;
 	ft_check_value(size.size(),static_cast<unsigned long int>(0));
 	ft_check_value(size.empty(),true);
@@ -133,7 +135,7 @@ void	ft_map_test()
 //                                    Element Access                                    //
 //--------------------------------------------------------------------------------------//
 
-	ft_title("Element Access : ");
+	ft_title("\e[0;33mElement Access : \e[0m");
 	MAP map_ea;
 	map_ea[1] = 42;
 	ft_check_value(map_ea[1], 42);
@@ -157,7 +159,7 @@ void	ft_map_test()
 //--------------------------------------------------------------------------------------//
 
 
-ft_title("Modifier : ");
+ft_title("\e[0;33mModifier : \e[0m");
 MAP map_m;
 PAIR p;
 p.first = 142; p.second = 42;
@@ -211,7 +213,7 @@ catch(const std::exception& e)
 //--------------------------------------------------------------------------------------//
 //                                      Operations                                       //
 //--------------------------------------------------------------------------------------//
-ft_title("Operations : ");
+ft_title("\e[0;33mOperations : \e[0m");
 MAP map_ope;
 ft_check_value(map_ope.count(42), static_cast<unsigned long int>(0));
 map_ope[42] = 42;
@@ -237,15 +239,19 @@ it_ob = map_ope.upper_bound(9);
 ft_check_value(it_ob, (--map_ope.end()));
 it_ob = map_ope.upper_bound(5);
 ft_check_value(it_ob->first, 8);
-/*std::pair<typename MAP::iterator, typename MAP::iterator> pair = map_ope.equal_range(5);
+
+map_ope.find(8)->second = 1998;
+ft_check_value(map_ope[8], 1998);
+
+PAIR_IT pair = map_ope.equal_range(5);
 ft_check_value(pair.first->first, 5);
-ft_check_value(pair.second->first, 8);*/
+ft_check_value(pair.second->first, 8);
 
 
 //--------------------------------------------------------------------------------------//
 //                                      Operator                                        //
 //--------------------------------------------------------------------------------------//
-ft_title("Operator : ");
+ft_title("\e[0;33mOperator : \e[0m");
 
 MAP map_op;
 map_op[0] = 5;
@@ -287,7 +293,7 @@ ft_check_value(map_op == map_op2, false);
 //--------------------------------------------------------------------------------------//
 //                                      Speed Test                                      //
 //--------------------------------------------------------------------------------------//
-	ft_title("Speed Test : ");
+	ft_title("\e[0;33mSpeed Test : \e[0m");
 	std::cout << std::endl;
 	MAP map_s1;
 	MyChrono chrono;

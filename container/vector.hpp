@@ -178,7 +178,7 @@ class vector : private vector_base<T, Alloc>
 
 
 	template <typename InputIterator>
-	vector(InputIterator first, InputIterator last, const allocator_type & alloc = allocator_type(), typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = 0): vector_base<T,Alloc>(alloc, 0)
+	vector(InputIterator first, InputIterator last, const allocator_type & alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0): vector_base<T,Alloc>(alloc, 0)
 	{
 		size_type n = 0;
 		for (InputIterator ptr = first; ptr != last; ptr++)
@@ -291,7 +291,7 @@ class vector : private vector_base<T, Alloc>
 	const value_type* data() const  {return (this->_v);}
 	/* MODIFIER */
 	template <class InputIterator> 
-	void assign(InputIterator first, InputIterator last, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = 0)
+	void assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
 	{
 		size_type n = 0;	
 		for (InputIterator ptr = first; ptr != last; ptr++)
@@ -398,7 +398,7 @@ class vector : private vector_base<T, Alloc>
 		return(new_pos);
 	}
 	template <class InputIterator>
-	void insert(iterator position, InputIterator first, InputIterator last,typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = 0)
+	void insert(iterator position, InputIterator first, InputIterator last,typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
 	{
 		size_type pos; 
 		size_type nbr_elements;

@@ -1,4 +1,5 @@
 #include "vector_test.hpp"
+#include "test.hpp"
 
 
 void	ok(void)
@@ -30,8 +31,11 @@ void	title(std::string name)
 
 void ft_wait()
 {
+	#if SLOWMODE
+	std::cout << std::endl << std::endl;
 	std::cout << "Please press any key to continue... " << std::endl;
 	system("read");
 		for (int i = 0; i < 100; i++)
 		std::cout << std::endl;
+	#endif
 }

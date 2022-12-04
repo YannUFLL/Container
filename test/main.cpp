@@ -6,11 +6,12 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 11:42:30 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/01 12:20:56 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/04 19:32:26by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <chrono> 
+
+#include "test.hpp"
 #include <unistd.h>
 #include <stdlib.h>
 #include "../test/MyChrono.hpp"
@@ -31,14 +32,19 @@ int main()
 	
 	for (int i = 0; i < 100; i++)
 		std::cout << std::endl;
-	//ft_vector_test<int>();
-	std::cout << "Please press any key to start map test... " << std::endl;
+	ft_vector_test<int>();
+	std::cout << std::endl << std::endl << std::endl;
+	#if SLOWMODE
+	std::cout << "\e[0;32m Please press any key to start map test... \e[0m" << std::endl;
 	system("read");
-	for (int i = 0; i < 100; i++)
+	#endif
+	for (int i = 0; i < 100 ; i++)
 		std::cout << std::endl;
-		
 	ft_map_test<int, int>();
-	std::cout << "Please press any key to start stack test... " << std::endl;
+	std::cout << std::endl << std::endl << std::endl;
+	#if SLOWMODE
+	std::cout << "\e[0;32 Please press any key to start stack test...\e[0m " << std::endl;
 	system("read");
+	#endif
 	ft_stack_test<int>();
 }

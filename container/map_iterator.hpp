@@ -1,5 +1,7 @@
 	#ifndef MAP_ITERATOR_HPP
 	#define MAP_ITERATOR_HPP
+
+	#include "../stl_rewrite/enable_if.hpp"
 	
 	namespace ft 
 	{
@@ -17,14 +19,24 @@
 
 			map_iterator(): _n(&_dummy), _last(NULL), _dummy(), _same_add(), _same_sub(), _init(){
 			}
-			template<typename CONST>
-			map_iterator(map_iterator<T, Node, CONST>const &copy): _last(copy._last), _same_add(copy._same_add), _same_sub(copy._same_sub), _init(copy._init)
+
+			template < typename V >
+			map_iterator(const map_iterator<T, Node, V> &copy,  typename ft::enable_if<!std::is_const<V>::value>::type* = 0): _last(copy._last), _same_add(copy._same_add), _same_sub(copy._same_sub), _init(copy._init)
 			{
 				if (copy._n == &copy._dummy)
-						_n = &_dummy;
-					else
-						_n = copy._n;
+					_n = &_dummy;
+				else
+					_n = copy._n;
 			}
+			
+			map_iterator(const map_iterator &copy): _last(copy._last), _same_add(copy._same_add), _same_sub(copy._same_sub), _init(copy._init)
+			{
+				if (copy._n == &copy._dummy)
+					_n = &_dummy;
+				else
+					_n = copy._n;
+			}
+
 			map_iterator(Node* ptr):_n(ptr), _last(NULL), _dummy(), _same_add(), _same_sub(), _init()
 			{
 			}

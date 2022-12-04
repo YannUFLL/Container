@@ -46,6 +46,6 @@ void MyChrono::end()
 void MyChrono::print_time(std::string const str) const
 {
  std::cout << std::setw(20) << std::left << str;
- std::cout << _time_spent << " micro secondes" <<  std::endl;
+ std::cout << _time_spent << " micro seconds" <<  std::endl;
 }
 

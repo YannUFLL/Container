@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 09:20:53 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/02 20:44:38 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/03 17:09:16 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ public :
 	typedef typename traits_type::value_type value_type;
 	typedef std::size_t size_type;
 	Wrapper_it():current(It()) {};
-	Wrapper_it(It itr) : current(itr) {}
+	Wrapper_it(const It &itr) : current(itr) {}
 	template<class U>
 	Wrapper_it(const Wrapper_it<U>& other): current(other.base()) {}
 
