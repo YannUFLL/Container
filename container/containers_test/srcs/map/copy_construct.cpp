@@ -37,5 +37,6 @@ int		main(void)
 	printSize(mp);
 	printSize(mp_range);
 	printSize(mp_copy);
+	std::cout << "coucou" << std::endl;
 	return (0);
 }

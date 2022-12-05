@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/04 23:40:20 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 09:22:38 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -532,7 +532,7 @@ class map
 		beg = _root;
 		if (_root == NULL)
 		{
-			iterator begin(_root);
+			typename ft::map_iterator<T, node,value_type> begin(_root, 1);
 			return (begin);
 		}
 		while (beg->left != NULL)
@@ -548,7 +548,7 @@ class map
 		beg = _root;
 		if (_root == NULL)
 		{
-			iterator it(_root);
+			typename ft::map_iterator<T, node,value_type> it(_root, 1);
 			return (it);
 		}
 		while (beg->right != NULL)
@@ -574,7 +574,7 @@ class map
 		beg = _root;
 		if (_root == NULL)
 		{
-			const_iterator begin(_root);
+			typename ft::map_iterator<T, node, const value_type> begin(_root, 1);
 			return (begin);
 		}
 		while (beg->left != NULL)
@@ -590,7 +590,7 @@ class map
 		beg = _root;
 		if (_root == NULL)
 		{
-			const_iterator it(_root);
+			typename ft::map_iterator<T, node, const value_type> it(_root, 1);
 			return (it);
 		}
 		while (beg->right != NULL)
@@ -754,7 +754,6 @@ value_compare value_comp() const
 		if (!element)
 		{
 			iterator tmp(this->end());
-			std::cout << "COUCOU" << std::endl;
 			return (tmp);
 		}
 		else
