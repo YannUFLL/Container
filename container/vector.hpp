@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 23:34:10 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/05 11:12:10 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 12:40:41 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -516,13 +516,15 @@ class vector : private vector_base<T, Alloc>
 		if (first == last)
 			return (last);
 		size_type n = 0;
-		for (iterator ptr = first; ptr != last; ptr++)
+		pointer end = &*last; 
+		for (pointer ptr = &*first; ptr != end; ptr++)
 			n++;	
-		for (iterator ptr = first; ptr != last; ptr++)
-			this->_alloc.destroy(&*ptr);
+		for (pointer ptr = &*first; ptr != end; ptr++)
+			this->_alloc.destroy(ptr);
 		if (&*last != this->_last)
 		{
-			uninitialized_copy_and_destroy(first, (this->end() - n), last, this->_alloc);
+			std::copy(&*last,&*this->end(), &*first); // faster
+			//uninitialized_copy_and_destroy(first, (this->end() - n), last, this->_alloc);
 			this->_space = this->_space - n;
 			return (first);
 		}
@@ -536,7 +538,10 @@ class vector : private vector_base<T, Alloc>
 		this->_alloc.destroy(&*position);
 		iterator copy(&*(position + 1));
 		if (*&position != this->_last)
-			uninitialized_copy_and_destroy(position, this->end() - 1, copy, this->_alloc);
+			{
+			 std::copy(&*copy,&*this->end(), &*position);// faster
+			//uninitialized_copy_and_destroy(position, this->end() - 1, copy, this->_alloc);
+		}
 		this->_space = this->_space - 1;
 		return (position);
 	}

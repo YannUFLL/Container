@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 23:34:25 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/05 09:34:10 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 12:41:51 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,9 @@ void	ft_map_test()
 //                                     Constructor                                      //
 //--------------------------------------------------------------------------------------//
 	std::cout << std::endl << "\e[0;31m		Starting map test \e[0m" << std::endl;
+	#if SLOWMODE
 	usleep(2000000);
+	#endif
 	ft_title("\e[0;33mConstructor : ");
 
 	std::list<ft::pair<const int, int> > lst;

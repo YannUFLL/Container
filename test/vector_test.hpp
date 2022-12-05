@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 23:34:42 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/05 11:11:29 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 12:43:18 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,9 @@ void	ft_wait();
 template<typename T>
 void	ft_check_value(T value, T control, bool endl = 0)
 {
+	#if SLOWMODE
 	usleep(50000);
+	#endif
 	if (endl == 1)
 	{	
 		if (value == control)
@@ -146,7 +148,9 @@ void	ft_vector_test()
 //--------------------------------------------------------------------------------------//
 
 	std::cout << std::endl << "\e[0;31m		Starting vector test \e[0m" << std::endl << std::endl;
+	#if SLOWMODE
 	usleep(1000000);
+	#endif
 	std::cout << std::endl << "\e[0;33mStarting test... PHASE 1 'constructor' :\e[0m" << std::endl;
 	MVEC<T> my_default_constructor; 
 	INFO(my_default_constructor, "Default constructor : ");
@@ -382,6 +386,13 @@ void	ft_vector_test()
 	vector3.erase(middle);
 	chrono.end();
 	chrono.print_time("Time for suppress a element in the middle of the vector :");
+
+	middle = vector3.begin() + (vector3.size() / 2);
+	typename VEC<T>::iterator middle2 = vector3.begin() + (vector3.size() / 2) + 1000;
+	chrono.begin();
+	vector3.erase(middle, middle2);
+	chrono.end();
+	chrono.print_time("Time for suppress 1000 elements in the middle of the vector :");
 
 	chrono.begin();
 	vector2.clear();

@@ -29,7 +29,9 @@ template<typename T>
 void	ft_stack_test()
 {
 	std::cout << std::endl << "\e[0;31m	Starting stack test \e[0m" << std::endl << std::endl;
+	#if SLOWMODE
 	usleep(1000000);
+	#endif
 	STACK s;
 	s.push(15);
 	ft_check_value(s.top(), 15);

@@ -17,7 +17,7 @@
 //--------------------------------------------------------------------------------------//
 
 #define SLOWMODE 0
-#define LIB std
+#define LIB ft
 
 
 #define MAP LIB::map<T1, T2>
