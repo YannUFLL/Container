@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/05 09:22:38 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 09:37:10 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,8 @@
 
 #include <iterator>
 #include "map_iterator.hpp"
-#include <cstring>
 #include <functional>
 #include <memory>
-#include <initializer_list>
 #include "../stl_rewrite/ft_pair.hpp"
 #include "../stl_rewrite/stl_iterator.hpp"
 #include "../stl_rewrite/enable_if.hpp"

@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 23:34:25 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/04 23:42:17 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 09:34:10 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,24 +313,24 @@ ft_check_value(map_op == map_op2, false);
 	for (int i = 0; i < PERF_VALUE; i++)
 		map_s1[i];
 	chrono.end();
-	chrono.print_time(STRING(time insert PERF_VALUE elements : ));
+	chrono.print_time(STRING(Time for insert PERF_VALUE elements : ));
 
 	chrono.begin();
 	for (int i = 0; i < PERF_VALUE; i++)
 		map_s1.erase(i);
 	chrono.end();
-	chrono.print_time(STRING(time erase PERF_VALUE elements : ));
+	chrono.print_time(STRING(Time for erase PERF_VALUE elements : ));
 
 	chrono.begin();
 	for (int i = 0; i < PERF_VALUE; i++)
 	map_s1[rand()] = rand();
 	chrono.end();
-	chrono.print_time(STRING(time insert random PERF_VALUE elements : ));
+	chrono.print_time(STRING(Time for insert random PERF_VALUE elements : ));
 		
 	chrono.begin();
 	map_s1.clear();
 	chrono.end();
-	chrono.print_time(STRING(time clear map random PERF_VALUE elements : ));
+	chrono.print_time(STRING(Time for clear map random PERF_VALUE elements : ));
 
 }
 

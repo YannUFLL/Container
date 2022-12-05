@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 11:15:04 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/11/30 16:40:19 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 09:37:22 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@ friend bool operator>=(const ft::stack<T,Container>& lhs, const ft::stack<T,Cont
 	return (lhs.c >= rhs.c);
 }
 };
-
-
 
 template<class T, class Container >
 void swap(ft::stack<T,Container>& lhs,

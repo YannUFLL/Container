@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 23:34:35 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/04 23:42:13 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 10:02:09 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 
 #define SLOWMODE 0
 #define LIB std
-
 
 
 #define MAP LIB::map<T1, T2>

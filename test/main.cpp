@@ -29,7 +29,6 @@ void	ft_vector_test();
 
 int main()
 {
-	
 	for (int i = 0; i < 100; i++)
 		std::cout << std::endl;
 	ft_vector_test<int>();

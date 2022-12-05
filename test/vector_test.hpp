@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 23:34:42 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/04 23:42:20 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 11:11:29 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,8 +376,8 @@ void	ft_vector_test()
 	vector2.resize(PERF_VALUE * 10 );
 	chrono.end();
 	chrono.print_time(STRING(Time for a resize of (PERF_VALUE  * 10)  : ));
+	
 	middle = vector3.begin() + (vector3.size() / 2);
-
 	chrono.begin();
 	vector3.erase(middle);
 	chrono.end();
