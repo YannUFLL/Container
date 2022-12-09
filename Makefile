@@ -17,18 +17,23 @@ DEBEUG = -g
 
 CFLAGS = -Werror -Wextra -Wall -std=c++98 -g3
 
-objs/%.o: */%.cpp
+OBJDIR = objs
+
+objs/%.o: */%.cpp | $(OBJDIR)
 	${CC} -o $@ -c $< ${CFLAGS} ${DEBEUG}
 
 
-${NAME}:	${OBJS}
+${NAME}:	${OBJS} 
 			${LINK} ${NAME} ${OBJS} -fsanitize=thread
 
-${NAME_STD}:	${OBJS}
+${NAME_STD}:	${OBJS} 
 				${LINK} ${NAME_STD} ${OBJS} -fsanitize=thread
 
-${NAME_FT}:	${OBJS}
+${NAME_FT}:	${OBJS} 
 			${LINK} ${NAME_FT} ${OBJS} -fsanitize=thread
+
+${OBJDIR} :
+			mkdir ${OBJDIR}
 
 ft_mode : 
 			sed -i.bak 's/std/ft/' test/test.hpp

@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 19:14:54 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/05 09:37:10 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/05 16:57:15 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -476,7 +476,7 @@ class map
 	node* new_node(value_type content = value_type())
 	{
 		node *ptr = _alloc_node.allocate(1);
-			_alloc_node.construct(ptr);
+		_alloc_node.construct(ptr);
 		try
 		{
 			_alloc_pair.construct(&ptr->content, content);
