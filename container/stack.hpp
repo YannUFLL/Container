@@ -6,7 +6,7 @@
 /*   By: ydumaine <ydumaine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 11:15:04 by ydumaine          #+#    #+#             */
-/*   Updated: 2022/12/05 09:37:22 by ydumaine         ###   ########.fr       */
+/*   Updated: 2022/12/09 17:20:27 by ydumaine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ namespace ft{
 template<class T, class Container = ft::vector<T> >
 class stack 
 {
-	private : 
+	protected : 
 		 Container c;
 	public :
 	typedef Container container_type;
